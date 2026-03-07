@@ -1,0 +1,101 @@
+778b7895c23b:15709:15709 [0] NCCL INFO Bootstrap : Using eth0:172.23.0.2<0>
+778b7895c23b:15709:15709 [0] NCCL INFO NET/Plugin: No plugin found (libnccl-net.so)
+778b7895c23b:15709:15709 [0] NCCL INFO NET/Plugin: Plugin load returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory : when loading libnccl-net.so
+778b7895c23b:15709:15709 [0] NCCL INFO NET/Plugin: Using internal network plugin.
+778b7895c23b:15709:15709 NCCL CALL ncclGetUniqueId(0xb6d91b7435f0c27e)
+778b7895c23b:15709:15709 [0] NCCL INFO cudaDriverVersion 12080
+778b7895c23b:15709:15709 [0] NCCL INFO NCCL version 2.21.5+cuda12.1
+778b7895c23b:15709:15709 [0] NCCL INFO init.cc:1785 Cuda Host Alloc Size 4 pointer 0x7ebb5e600400
+778b7895c23b:15709:15775 [0] NCCL INFO Failed to open libibverbs.so[.1]
+778b7895c23b:15709:15775 [0] NCCL INFO NET/Socket : Using [0]eth0:172.23.0.2<0>
+778b7895c23b:15709:15775 [0] NCCL INFO Using non-device net plugin version 0
+778b7895c23b:15709:15775 [0] NCCL INFO Using network Socket
+778b7895c23b:15709:15775 [0] NCCL INFO ncclCommInitRank comm 0x1bc88e00 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0xb6d91b7435f0c27e - Init START
+778b7895c23b:15709:15775 [0] NCCL INFO NET/Socket : GPU Direct RDMA Disabled for HCA 0 'eth0'
+778b7895c23b:15709:15775 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to LOC
+778b7895c23b:15709:15775 [0] NCCL INFO === System : maxBw 16.0 totalBw 24.0 ===
+778b7895c23b:15709:15775 [0] NCCL INFO CPU/0-0 (1/2/-1)
+778b7895c23b:15709:15775 [0] NCCL INFO + PCI[5000.0] - NIC/0-0
+778b7895c23b:15709:15775 [0] NCCL INFO + PCI[24.0] - GPU/0-1000 (0)
+778b7895c23b:15709:15775 [0] NCCL INFO + SYS[16.0] - CPU/1
+778b7895c23b:15709:15775 [0] NCCL INFO CPU/0-1 (1/2/-1)
+778b7895c23b:15709:15775 [0] NCCL INFO + PCI[24.0] - GPU/0-a1000 (1)
+778b7895c23b:15709:15775 [0] NCCL INFO + SYS[16.0] - CPU/0
+778b7895c23b:15709:15775 [0] NCCL INFO ==========================================
+778b7895c23b:15709:15775 [0] NCCL INFO GPU/1000 :GPU/0-1000 (0/5000.0/LOC) GPU/0-a1000 (3/16.0/SYS) CPU/0-0 (1/24.0/PHB) CPU/0-1 (2/16.0/SYS) 
+778b7895c23b:15709:15775 [0] NCCL INFO GPU/A1000 :GPU/0-1000 (3/16.0/SYS) GPU/0-a1000 (0/5000.0/LOC) CPU/0-0 (2/16.0/SYS) CPU/0-1 (1/24.0/PHB) 
+778b7895c23b:15709:15775 [0] NCCL INFO Setting affinity for GPU 0 to ffffffff,00000000,ffffffff
+778b7895c23b:15709:15775 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 1, bw 15.000000/15.000000, type SYS/PIX, sameChannels 1
+778b7895c23b:15709:15775 [0] NCCL INFO  0 : GPU/0 GPU/1
+778b7895c23b:15709:15775 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 1, bw 15.000000/15.000000, type SYS/PIX, sameChannels 1
+778b7895c23b:15709:15775 [0] NCCL INFO  0 : GPU/0 GPU/1
+778b7895c23b:15709:15775 [0] NCCL INFO comm 0x1bc88e00 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+778b7895c23b:15709:15775 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1
+778b7895c23b:15709:15775 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1
+778b7895c23b:15709:15775 [0] NCCL INFO Channel 00/02 :    0   1
+778b7895c23b:15709:15775 [0] NCCL INFO Channel 01/02 :    0   1
+778b7895c23b:15709:15775 [0] NCCL INFO Ring 00 : 1 -> 0 -> 1
+778b7895c23b:15709:15775 [0] NCCL INFO Ring 01 : 1 -> 0 -> 1
+778b7895c23b:15709:15775 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1
+778b7895c23b:15709:15775 [0] NCCL INFO P2P Chunksize set to 131072
+778b7895c23b:15709:15775 [0] NCCL INFO UDS: Creating service thread comm 0x1bc88e00 rank 0
+778b7895c23b:15709:15775 [0] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:41 Cuda Alloc Size 1216 pointer 0x7ebb60a00000
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:44 Cuda Alloc Size 40 pointer 0x7ebb60c00000
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:55 Cuda Alloc Size 8 pointer 0x7ebb60e00000
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:41 Cuda Alloc Size 1216 pointer 0x7ebb61000000
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:44 Cuda Alloc Size 40 pointer 0x7ebb61200000
+778b7895c23b:15709:15775 [0] NCCL INFO channel.cc:55 Cuda Alloc Size 8 pointer 0x7ebb61400000
+778b7895c23b:15709:15775 [0] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-z7cD8M
+778b7895c23b:15709:15775 [0] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-MnwCrC
+778b7895c23b:15709:15775 [0] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-gsr3RS
+778b7895c23b:15709:15775 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+778b7895c23b:15709:15775 [0] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-dCp39l
+778b7895c23b:15709:15775 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+778b7895c23b:15709:15775 [0] NCCL INFO Connected all rings
+778b7895c23b:15709:15775 [0] NCCL INFO Connected all trees
+778b7895c23b:15709:15775 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |
+778b7895c23b:15709:15775 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+778b7895c23b:15709:15775 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            512 |              0 |              0 |            640 |
+778b7895c23b:15709:15775 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   7.5 |    16.5/   0.0 |    14.1/  15.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   7.5 |    16.5/   0.0 |    14.1/  15.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  15.0 |    16.5/   0.0 |    14.1/  30.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  15.0 |    16.5/   0.0 |    14.1/  30.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO     AllReduce |     8.8/   1.8 |    17.8/   0.0 |    56.0/   6.9 |     8.6/   7.5 |    19.0/   0.0 |    19.8/  15.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |
+778b7895c23b:15709:15775 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+778b7895c23b:15709:15775 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |
+778b7895c23b:15709:15775 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    35.6/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:15709:15775 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+778b7895c23b:15709:15775 [0] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
+778b7895c23b:15709:15794 [0] NCCL INFO Mem Realloc old size 0, new size 8 pointer 0x7ebb48000bf0
+778b7895c23b:15709:15794 [0] NCCL INFO Allocated 7340388 bytes of shared memory in /dev/shm/nccl-RWXo7h
+778b7895c23b:15709:15794 [0] NCCL INFO New proxy send connection 0 from local rank 0, transport 2
+778b7895c23b:15709:15794 [0] NCCL INFO proxyProgressAsync opId=0x7ebb439bf2b0 op.type=1 op.reqBuff=0x7ebb48000bb0 op.respSize=16 done
+778b7895c23b:15709:15775 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7ebb439bf2b0
+778b7895c23b:15709:15775 [0] NCCL INFO resp.opId=0x7ebb439bf2b0 matches expected opId=0x7ebb439bf2b0
+778b7895c23b:15709:15794 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:15709:15775 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7ebb480065d0
+778b7895c23b:15709:15794 [0] NCCL INFO Allocated shareable buffer 0x7ebb61600000 size 4194304 ipcDesc 0x7ebb4800a528
+778b7895c23b:15709:15794 [0] NCCL INFO proxyProgressAsync opId=0x7ebb439bf2b0 op.type=2 op.reqBuff=0x7ebb4800a4d0 op.respSize=0 done
+778b7895c23b:15709:15775 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7ebb439bf2b0
+778b7895c23b:15709:15775 [0] NCCL INFO resp.opId=0x7ebb439bf2b0 matches expected opId=0x7ebb439bf2b0
+778b7895c23b:15709:15794 [0] NCCL INFO Received and initiated operation=SharedInit res=0
+778b7895c23b:15709:15775 [0] NCCL INFO init.cc:402 Cuda Alloc Size 11856 pointer 0x7ebb61a00000
+778b7895c23b:15709:15775 [0] NCCL INFO init.cc:430 Cuda Host Alloc Size 33554432 pointer 0x7ebb61c00000
+778b7895c23b:15709:15775 [0] NCCL INFO init.cc:436 Cuda Host Alloc Size 128 pointer 0x7ebb5e600600
+778b7895c23b:15709:15775 [0] NCCL INFO TUNER/Plugin: Plugin load returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory : when loading libnccl-tuner.so
+778b7895c23b:15709:15775 [0] NCCL INFO TUNER/Plugin: Using internal tuner plugin.
+778b7895c23b:15709:15775 NCCL CALL ncclCommInitRank(0x1bc88e00, 2, 0xb6d91b7435f0c27e, 0, 0)
+778b7895c23b:15709:15775 [0] NCCL INFO ncclCommInitRank comm 0x1bc88e00 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0xb6d91b7435f0c27e - Init COMPLETE
+778b7895c23b:15709:15709 [0] NCCL INFO AllReduce: opCount 0 sendbuff 0x7ebb68800000 recvbuff 0x7ebb68800000 count 10 datatype 7 op 0 root 0 comm 0x1bc88e00 [nranks=2] stream 0x18dcafe0
+778b7895c23b:15709:15709 NCCL CALL ncclAllReduce(7ebb68800000,7ebb68800000,10,7,0,0,0x1bc88e00,0x18dcafe0)
+778b7895c23b:15709:15709 [0] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)
+778b7895c23b:15709:15709 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.605333
+778b7895c23b:15709:15794 [0] NCCL INFO [Service thread] Connection closed by localRank 0
+778b7895c23b:15709:15795 [0] NCCL INFO [Proxy Service UDS] exit: stop 1 abortFlag 1
+778b7895c23b:15709:15799 [0] NCCL INFO comm 0x1bc88e00 rank 0 nranks 2 cudaDev 0 busId 1000 - Abort COMPLETE

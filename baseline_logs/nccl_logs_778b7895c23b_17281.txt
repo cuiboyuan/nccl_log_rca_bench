@@ -1,0 +1,206 @@
+778b7895c23b:17281:17281 [0] NCCL INFO Bootstrap: Using eth0:172.23.0.2<0>
+778b7895c23b:17281:17281 NCCL CALL ncclGetUniqueId(0xa6f9e983f74e9207)
+778b7895c23b:17281:17281 [0] NCCL INFO cudaDriverVersion 12080
+778b7895c23b:17281:17281 [0] NCCL INFO NCCL version 2.26.6+cuda12.8
+778b7895c23b:17281:17281 [0] NCCL INFO init.cc:1680 Cuda Host Alloc Size 4 pointer 0x7c9788600400
+778b7895c23b:17281:17281 [0] NCCL INFO Comm config Traffic class set to 1847617129
+778b7895c23b:17281:17347 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so. Using internal net plugin.
+778b7895c23b:17281:17347 [0] NCCL INFO Failed to open libibverbs.so[.1]
+778b7895c23b:17281:17347 [0] NCCL INFO NET/Socket : Using [0]eth0:172.23.0.2<0>
+778b7895c23b:17281:17347 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+778b7895c23b:17281:17347 [0] NCCL INFO Using network Socket
+778b7895c23b:17281:17347 [0] NCCL INFO ncclCommInitRankConfig comm 0x36f6d310 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0xa6f9e983f74e9207 - Init START
+778b7895c23b:17281:17347 [0] NCCL INFO RAS network listening socket at 172.23.0.2<47427>
+778b7895c23b:17281:17347 [0] NCCL INFO RAS client listening socket at ::1<28028>
+778b7895c23b:17281:17347 [0] NCCL INFO Mem Realloc old size 0, new size 256 pointer 0x7c97777c28d0
+778b7895c23b:17281:17349 [0] NCCL INFO RAS thread started
+778b7895c23b:17281:17349 [0] NCCL INFO Mem Realloc old size 0, new size 32 pointer 0x7c9768000bf0
+778b7895c23b:17281:17347 [0] NCCL INFO Bootstrap timings total 0.001525 (create 0.000047, send 0.000161, recv 0.000472, ring 0.000049, delay 0.000000)
+778b7895c23b:17281:17349 [0] NCCL INFO RAS handling local addRanks request (old nRasPeers 0)
+778b7895c23b:17281:17349 [0] NCCL INFO RAS finished local processing of addRanks request (new nRasPeers 2, nRankPeers 2)
+778b7895c23b:17281:17349 [0] NCCL INFO RAS link 1: calculated deferred primary connection with 172.23.0.2<45705>
+778b7895c23b:17281:17349 [0] NCCL INFO RAS link -1: calculated deferred primary connection with 172.23.0.2<45705>
+778b7895c23b:17281:17349 [0] NCCL INFO RAS new incoming socket connection from 172.23.0.2<40282>
+778b7895c23b:17281:17349 [0] NCCL INFO RAS handling connInit from 172.23.0.2<40282> (version 22606, listeningAddr 172.23.0.2<45705>, peersHash 0xaa344e64b099c62e, deadPeersHash 0x0)
+778b7895c23b:17281:17347 [0] NCCL INFO TOPO/NET : Importing network plugins to topology
+778b7895c23b:17281:17347 [0] NCCL INFO Retrieving state for Socket
+778b7895c23b:17281:17347 [0] NCCL INFO Initialized state 0 for Socket
+778b7895c23b:17281:17347 [0] NCCL INFO NET/Socket : GPU Direct RDMA Disabled for HCA 0 'eth0'
+778b7895c23b:17281:17347 [0] NCCL INFO ncclTopoPopulateNics : Filled eth0 in topo with pciPath=(null) keep=1 coll=(null)
+778b7895c23b:17281:17347 [0] NCCL INFO NCCL_P2P_DISABLE set by environment to 1
+778b7895c23b:17281:17347 [0] NCCL INFO === System : maxBw 16.0 totalBw 24.0 ===
+778b7895c23b:17281:17347 [0] NCCL INFO CPU/0-0 (1/2/-1)
+778b7895c23b:17281:17347 [0] NCCL INFO + PCI[5000.0] - NIC/0-0
+778b7895c23b:17281:17347 [0] NCCL INFO + PCI[24.0] - GPU/0-1000 (0)
+778b7895c23b:17281:17347 [0] NCCL INFO + SYS[16.0] - CPU/0-1
+778b7895c23b:17281:17347 [0] NCCL INFO CPU/0-1 (1/2/-1)
+778b7895c23b:17281:17347 [0] NCCL INFO + PCI[24.0] - GPU/0-a1000 (1)
+778b7895c23b:17281:17347 [0] NCCL INFO + SYS[16.0] - CPU/0-0
+778b7895c23b:17281:17347 [0] NCCL INFO ==========================================
+778b7895c23b:17281:17347 [0] NCCL INFO GPU/0-1000 :GPU/0-1000 (0/5000.0/LOC) GPU/0-a1000 (3/16.0/SYS) CPU/0-0 (1/24.0/PHB) CPU/0-1 (2/16.0/SYS) 
+778b7895c23b:17281:17347 [0] NCCL INFO GPU/0-a1000 :GPU/0-1000 (3/16.0/SYS) GPU/0-a1000 (0/5000.0/LOC) CPU/0-0 (2/16.0/SYS) CPU/0-1 (1/24.0/PHB) 
+778b7895c23b:17281:17347 [0] NCCL INFO Setting affinity for GPU 0 to ffffffff,00000000,ffffffff
+778b7895c23b:17281:17347 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 1, bw 15.000000/15.000000, type SYS/PIX, sameChannels 1
+778b7895c23b:17281:17347 [0] NCCL INFO  0 : GPU/0 GPU/1
+778b7895c23b:17281:17347 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 1, bw 15.000000/15.000000, type SYS/PIX, sameChannels 1
+778b7895c23b:17281:17347 [0] NCCL INFO  0 : GPU/0 GPU/1
+778b7895c23b:17281:17347 [0] NCCL INFO comm 0x36f6d310 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+778b7895c23b:17281:17347 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1
+778b7895c23b:17281:17347 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1
+778b7895c23b:17281:17347 [0] NCCL INFO Channel 00/02 : 0 1
+778b7895c23b:17281:17347 [0] NCCL INFO Channel 01/02 : 0 1
+778b7895c23b:17281:17347 [0] NCCL INFO Ring 00 : 1 -> 0 -> 1
+778b7895c23b:17281:17347 [0] NCCL INFO Ring 01 : 1 -> 0 -> 1
+778b7895c23b:17281:17347 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1
+778b7895c23b:17281:17347 [0] NCCL INFO P2P Chunksize set to 131072
+778b7895c23b:17281:17347 [0] NCCL INFO Check P2P Type intraNodeP2pSupport 0 directMode 0
+778b7895c23b:17281:17347 [0] NCCL INFO UDS: Creating service thread comm 0x36f6d310 rank 0
+778b7895c23b:17281:17353 [0] NCCL INFO [Proxy Service] Device 0 CPU core 87
+778b7895c23b:17281:17347 [0] NCCL INFO misc/utils.cc:233 memory stack hunk malloc(65536)
+778b7895c23b:17281:17354 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 74
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:42 Cuda Alloc Size 1216 pointer 0x7c978a600000
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:45 Cuda Alloc Size 40 pointer 0x7c978a800000
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:56 Cuda Alloc Size 8 pointer 0x7c978aa00000
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:42 Cuda Alloc Size 1216 pointer 0x7c978ac00000
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:45 Cuda Alloc Size 40 pointer 0x7c978ae00000
+778b7895c23b:17281:17347 [0] NCCL INFO channel.cc:56 Cuda Alloc Size 8 pointer 0x7c978b000000
+778b7895c23b:17281:17347 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |
+778b7895c23b:17281:17347 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+778b7895c23b:17281:17347 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            512 |              0 |              0 |            640 |
+778b7895c23b:17281:17347 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   7.5 |    16.5/   0.0 |    14.1/  15.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   7.5 |    16.5/   0.0 |    14.1/  15.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  15.0 |    16.5/   0.0 |    14.1/  30.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/  15.0 |    16.5/   0.0 |    14.1/  30.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllReduce |     8.8/   1.8 |    17.8/   0.0 |    16.4/   6.9 |     8.6/   7.5 |    19.0/   0.0 |    19.8/  15.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |
+778b7895c23b:17281:17347 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+778b7895c23b:17281:17347 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |
+778b7895c23b:17281:17347 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    35.6/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO   Algorithm   |                             PAT                  |
+778b7895c23b:17281:17347 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |
+778b7895c23b:17281:17347 [0] NCCL INFO  Max NThreads |              0 |              0 |              0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |
+778b7895c23b:17281:17347 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+778b7895c23b:17281:17347 [0] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:436 Cuda Alloc Size 23648 pointer 0x7c978b200000
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:438 Cuda Alloc Size 8 pointer 0x7c978b400000
+778b7895c23b:17281:17347 [0] NCCL INFO CC Off, workFifoBytes 1048576
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:490 Cuda Host Alloc Size 1048576 pointer 0x7c9788600600
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:495 Cuda Host Alloc Size 256 pointer 0x7c9788700600
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:502 Cuda Host Alloc Size 512 pointer 0x7c9788700800
+778b7895c23b:17281:17347 [0] NCCL INFO init.cc:503 Cuda Host Alloc Size 512 pointer 0x7c9788700a00
+778b7895c23b:17281:17347 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so. Using internal tuner plugin.
+778b7895c23b:17281:17347 NCCL CALL ncclCommInitRank(0x36f6d310, 2, 0xa6f9e983f74e9207, 0, 0)
+778b7895c23b:17281:17347 [0] NCCL INFO ncclCommInitRankConfig comm 0x36f6d310 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0xa6f9e983f74e9207 - Init COMPLETE
+778b7895c23b:17281:17347 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 2 total 0.30 (kernels 0.21, alloc 0.03, bootstrap 0.00, allgathers 0.00, topo 0.03, graphs 0.00, connections 0.01, rest 0.01)
+778b7895c23b:17281:17281 [0] NCCL INFO AllReduce: opCount 0 sendbuff 0x7c9792800000 recvbuff 0x7c9792800000 count 10 datatype 7 op 0 root 0 comm 0x36f6d310 [nranks=2] stream 0x2ae68dc0
+778b7895c23b:17281:17281 NCCL CALL ncclAllReduce(7c9792800000,7c9792800000,10,7,0,0,0x36f6d310,0x2ae68dc0)
+778b7895c23b:17281:17281 [0] NCCL INFO misc/utils.cc:233 memory stack hunk malloc(65536)
+778b7895c23b:17281:17353 [0] NCCL INFO Mem Realloc old size 0, new size 8 pointer 0x7c9760000f10
+778b7895c23b:17281:17353 [0] NCCL INFO New proxy recv connection 0 from local rank 0, transport 1
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=1 op.reqBuff=0x7c9760000ed0 op.respSize=16 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7c9760000f30
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM Host Alloc Size 10485760 pointer 0x7c978c600000 handle 7c9760004cc0 numa 0 dev 0 granularity 2097152
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM allocated shareable buffer 0x7c978c600000 size 9637888
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=3 op.reqBuff=0x7c9760004b40 op.respSize=112 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Setup res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO New proxy recv connection 1 from local rank 0, transport 1
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=1 op.reqBuff=0x7c9760006c10 op.respSize=16 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7c9760000fa8
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM Host Alloc Size 10485760 pointer 0x7c978d000000 handle 7c9760006dd0 numa 0 dev 0 granularity 2097152
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM allocated shareable buffer 0x7c978d000000 size 9637888
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=3 op.reqBuff=0x7c9760006c50 op.respSize=112 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Setup res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO New proxy send connection 2 from local rank 0, transport 1
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=1 op.reqBuff=0x7c9760008aa0 op.respSize=16 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7c9760001020
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM Host Alloc Size 2097152 pointer 0x7c978da00000 handle 7c9760008c40 numa 0 dev 0 granularity 2097152
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM allocated shareable buffer 0x7c978da00000 size 4096
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=3 op.reqBuff=0x7c9760008ac0 op.respSize=112 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Setup res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+778b7895c23b:17281:17353 [0] NCCL INFO New proxy send connection 3 from local rank 0, transport 1
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=1 op.reqBuff=0x7c9760008ac0 op.respSize=16 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7c9760001098
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM Host Alloc Size 2097152 pointer 0x7c978dc00000 handle 7c976000aa90 numa 0 dev 0 granularity 2097152
+778b7895c23b:17281:17353 [0] NCCL INFO CUMEM allocated shareable buffer 0x7c978dc00000 size 4096
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7c97775cec70 op.type=3 op.reqBuff=0x7c976000a910 op.respSize=112 done
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Setup res=0
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+778b7895c23b:17281:17353 [0] NCCL INFO New proxy send connection 4 from local rank 1, transport 0
+778b7895c23b:17281:17353 [0] NCCL INFO proxyProgressAsync opId=0x7025235cec70 op.type=1 op.reqBuff=0x7c976000a910 op.respSize=16 done
+778b7895c23b:17281:17353 [0] NCCL INFO Received and initiated operation=Init res=0
+778b7895c23b:17281:17356 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO resp.opId=0x7c97775cec70 matches expected opId=0x7c97775cec70
+778b7895c23b:17281:17356 [0] NCCL INFO Connected to proxy localRank 1 -> connection 0x70250c001110
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 0x7c9779dcc4d0 opId 0x670621f3c2134587
+778b7895c23b:17281:17354 [0] NCCL INFO proxyUDSRecvReq::ncclProxyMsgGetFd rank 1 opId 0x57bd07257a363e9c handle=0x7c9760004cc0
+778b7895c23b:17281:17354 [0] NCCL INFO UDS proxyGetFd received handle 0x7c9760004cc0 peer 1 opId 57bd07257a363e9c
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 78 opId 0x670621f3c2134587 - DONE
+778b7895c23b:17281:17356 [0] NCCL INFO UDS: ClientGetFd handle 0x70250c004cc0 tpRank 1 returned fd 78 sameProcess 0
+778b7895c23b:17281:17354 [0] NCCL INFO proxyUDSRecvReq::ncclProxyMsgGetFd rank 1 opId 0x9ca8a107207a58e7 handle=0x7c9760008c40
+778b7895c23b:17281:17354 [0] NCCL INFO UDS proxyGetFd received handle 0x7c9760008c40 peer 1 opId 9ca8a107207a58e7
+778b7895c23b:17281:17356 [0] NCCL INFO CUMEM imported shareable host buffer from proxyRank 1 size 9637888 ptr 0x7c978de00000, granularity 2097152
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 0x7c9779dcc4d0 opId 0xa1b052dedb69dd19
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 78 opId 0xa1b052dedb69dd19 - DONE
+778b7895c23b:17281:17356 [0] NCCL INFO UDS: ClientGetFd handle 0x70250c008c40 tpRank 1 returned fd 78 sameProcess 0
+778b7895c23b:17281:17356 [0] NCCL INFO CUMEM imported shareable host buffer from proxyRank 1 size 4096 ptr 0x7c978e800000, granularity 2097152
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 0x7c9779dcc4d0 opId 0xd71cac30894353df
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 78 opId 0xd71cac30894353df - DONE
+778b7895c23b:17281:17356 [0] NCCL INFO UDS: ClientGetFd handle 0x70250c006dd0 tpRank 1 returned fd 78 sameProcess 0
+778b7895c23b:17281:17354 [0] NCCL INFO proxyUDSRecvReq::ncclProxyMsgGetFd rank 1 opId 0x6e5d52ee659a7025 handle=0x7c9760006dd0
+778b7895c23b:17281:17354 [0] NCCL INFO UDS proxyGetFd received handle 0x7c9760006dd0 peer 1 opId 6e5d52ee659a7025
+778b7895c23b:17281:17356 [0] NCCL INFO CUMEM imported shareable host buffer from proxyRank 1 size 9637888 ptr 0x7c978ea00000, granularity 2097152
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 0x7c9779dcc4d0 opId 0x5d2c50b0d8ffad75
+778b7895c23b:17281:17356 [0] NCCL INFO ProxyCall UDS comm 0x36f6d310 rank 0 tpRank 1(956ea277555dc260) reqSize 8 respSize 0 respFd 78 opId 0x5d2c50b0d8ffad75 - DONE
+778b7895c23b:17281:17356 [0] NCCL INFO UDS: ClientGetFd handle 0x70250c00aa90 tpRank 1 returned fd 78 sameProcess 0
+778b7895c23b:17281:17356 [0] NCCL INFO CUMEM imported shareable host buffer from proxyRank 1 size 4096 ptr 0x7c978f400000, granularity 2097152
+778b7895c23b:17281:17354 [0] NCCL INFO proxyUDSRecvReq::ncclProxyMsgGetFd rank 1 opId 0x8ba9f79c1534b2a3 handle=0x7c976000aa90
+778b7895c23b:17281:17354 [0] NCCL INFO UDS proxyGetFd received handle 0x7c976000aa90 peer 1 opId 8ba9f79c1534b2a3
+778b7895c23b:17281:17356 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+778b7895c23b:17281:17281 [0] NCCL INFO AllReduce: 40 Bytes -> Algo RING proto LL channel{Lo..Hi}={0..0}
+778b7895c23b:17281:17353 [0] NCCL INFO socketProgressOpt: abort called
+778b7895c23b:17281:17353 [0] NCCL INFO misc/socket.cc:881 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO socketProgressOpt: abort called
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:64 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:80 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:829 -> 3
+778b7895c23b:17281:17353 [0] NCCL INFO socketProgressOpt: abort called
+778b7895c23b:17281:17353 [0] NCCL INFO misc/socket.cc:881 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO socketProgressOpt: abort called
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:64 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:80 -> 3
+778b7895c23b:17281:17360 [0] NCCL INFO misc/socket.cc:829 -> 3
+778b7895c23b:17281:17354 [0] NCCL INFO [Proxy Service UDS] exit: stop 1 abortFlag 1
+778b7895c23b:17281:17360 [0] NCCL INFO comm 0x36f6d310 rank 0 nranks 2 cudaDev 0 busId 1000 - Abort COMPLETE
+778b7895c23b:17281:17349 [0] NCCL INFO RAS handling local termination request
+778b7895c23b:17281:17349 [0] NCCL INFO RAS terminating a connection with 172.23.0.2<45705>
+778b7895c23b:17281:17349 [0] NCCL INFO RAS thread terminating
