@@ -1,0 +1,4 @@
+run_id,scenario,fault_type,affected_rank,delay_seconds,oom_injection,world_size,master_port,status
+test_oom_001,fail_stop,cuda_oom,0,,True,2,29601,fault_triggered_or_failed
+test_slow_001,fail_slow,gpu_straggler,0,15,False,2,29602,completed
+test_oom_002,fail_stop,cuda_oom,0,,True,2,29611,fault_triggered_or_failed

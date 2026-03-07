@@ -1,0 +1,8 @@
+Rank 1: started on cuda:1
+Rank 0: started on cuda:0
+Rank 0: injecting delay of 15 seconds
+Rank 1: before all_reduce = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:1')
+Rank 0: before all_reduce = tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], device='cuda:0')
+NCCL version 2.20.5+cuda12.4
+Rank 0: after all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: after all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')

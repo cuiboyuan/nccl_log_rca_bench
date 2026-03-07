@@ -1,0 +1,11 @@
+{
+  "run_id": "test_oom_001",
+  "scenario": "fail_stop",
+  "fault_type": "cuda_oom",
+  "affected_rank": 0,
+  "delay_seconds": null,
+  "oom_injection": true,
+  "world_size": 2,
+  "master_port": "29601",
+  "status": "fault_triggered_or_failed"
+}
