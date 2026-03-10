@@ -1,14 +1,6 @@
-import sys
 import time
-from datetime import timedelta
 
-import torch
-import torch.distributed as dist
-import torch.multiprocessing as mp
-
-from phase2_common import write_metadata, append_label_csv
-
-from workload import FaultInjection, run_workload
+from generic_workload import FaultInjection, run_workload
 
 class FailSlow(FaultInjection):
     def __init__(self, rank, fault_rank, delay_seconds):
