@@ -16,7 +16,7 @@ conda activate ece1770
 conda config --env --add channels conda-forge
 conda config --env --add channels nvidia
 conda config --env --add channels pytorch
-conda config --env --set channel_priority strict
-conda install cuda-toolkit=12.2
-
+conda config --env --set channel_priority flexible
+conda install pytorch pytorch-cuda=12.1 -c pytorch -c nvidia -y
+conda install -c conda-forge nccl=2.26 -y
 ```
