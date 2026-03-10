@@ -44,6 +44,7 @@ def run_workload(rank, world_size, num_iterations, workload_timout, fault_inject
     try:
         # Example workload: num_iterations of all_reduce with some computation in between
         for i in range(num_iterations):
+            print(f"==== Iteration {i+1}/{num_iterations} ====")
             # Simulate some computation
             tensor = torch.ones(10, device=device) * (rank + 1 + i)
             time.sleep(1)
@@ -66,6 +67,7 @@ def run_workload(rank, world_size, num_iterations, workload_timout, fault_inject
 
     finally:
         try:
+            print("End of workload.")
             dist.destroy_process_group()
         except Exception as e:
             print(f"Rank {rank}: Exception during destroy_process_group: {e}", flush=True)

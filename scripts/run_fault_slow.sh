@@ -16,15 +16,16 @@ mkdir -p "$RUN_DIR"
 
 export PYTHONPATH="$PROJECT_ROOT/workload:${PYTHONPATH:-}"
 
-python3 "$PROJECT_ROOT/workload/fault_slow.py" \
+python3 "$PROJECT_ROOT/workload/run_experiment.py" \
   "$RUN_ID" \
   "$RUN_DIR" \
   "$FAULT_RANK" \
-  "$DELAY_SECONDS" \
   "$MASTER_PORT" \
   "$LABEL_CSV" \
+  "fail_slow" \
+  "$DELAY_SECONDS" \
   > "$RUN_DIR/stdout.log" \
-  2> "$RUN_DIR/stderr.log"
+  2> >(tee "$RUN_DIR/stderr.log" >&2) # print to both terminal and file
 
 echo "Slow run finished: $RUN_ID"
 echo "Artifacts: $RUN_DIR"

@@ -15,14 +15,15 @@ mkdir -p "$RUN_DIR"
 
 export PYTHONPATH="$PROJECT_ROOT/workload:${PYTHONPATH:-}"
 
-python3 "$PROJECT_ROOT/workload/fault_oom.py" \
+python3 "$PROJECT_ROOT/workload/run_experiment.py" \
   "$RUN_ID" \
   "$RUN_DIR" \
   "$FAULT_RANK" \
   "$MASTER_PORT" \
   "$LABEL_CSV" \
+  "fail_stop" \
   > "$RUN_DIR/stdout.log" \
-  2> "$RUN_DIR/stderr.log"
+  2> >(tee "$RUN_DIR/stderr.log" >&2) # print to both terminal and file
 
 echo "OOM run finished: $RUN_ID"
 echo "Artifacts: $RUN_DIR"
