@@ -6,34 +6,36 @@ import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from phase2_common import setup_nccl_env, write_metadata, append_label_csv
+from phase2_common import write_metadata, append_label_csv
+
+from workload import FaultInjection, run_workload
+
+class FailSlow(FaultInjection):
+    def __init__(self, rank, fault_rank, delay_seconds):
+        super().__init__(rank, fault_rank)
+        self.delay_seconds = delay_seconds
+
+    def should_inject(self, iteration):
+        # Fail-slow will be injected at every iteration to simulate a straggler
+        return self.rank == self.fault_rank
+
+    def inject(self):
+        print(f"Rank {self.rank}: injecting delay of {self.delay_seconds} seconds", flush=True)
+        time.sleep(self.delay_seconds)
+
 
 def run_fault_slow(rank, world_size, fault_rank, delay_seconds, run_dir, label_csv, master_port):
-    setup_nccl_env(run_dir, master_port)
+    fault_injection = FailSlow(rank, fault_rank, delay_seconds)
 
-    dist.init_process_group(
-        backend="nccl",
+    run_workload(
         rank=rank,
         world_size=world_size,
-        timeout=timedelta(seconds=90)
+        num_iterations=5,
+        workload_timout=timedelta(seconds=300),
+        fault_injection=fault_injection,
+        run_dir=run_dir,
+        master_port=master_port
     )
-
-    device = torch.device(f"cuda:{rank}")
-    torch.cuda.set_device(device)
-
-    tensor = torch.ones(10, device=device) * (rank + 1)
-
-    print(f"Rank {rank}: started on {device}", flush=True)
-
-    if rank == fault_rank:
-        print(f"Rank {rank}: injecting delay of {delay_seconds} seconds", flush=True)
-        time.sleep(delay_seconds)
-
-    print(f"Rank {rank}: before all_reduce = {tensor}", flush=True)
-    dist.all_reduce(tensor)
-    print(f"Rank {rank}: after all_reduce = {tensor}", flush=True)
-
-    dist.destroy_process_group()
 
 def main():
     if len(sys.argv) != 7:

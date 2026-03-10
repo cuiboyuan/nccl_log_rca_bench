@@ -6,60 +6,43 @@ import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from phase2_common import setup_nccl_env, write_metadata, append_label_csv
+from phase2_common import write_metadata, append_label_csv
 
-def run_fault_oom(rank, world_size, fault_rank, run_dir, label_csv, master_port):
-    setup_nccl_env(run_dir, master_port)
+from workload import FaultInjection, run_workload
 
-    dist.init_process_group(
-        backend="nccl",
-        rank=rank,
-        world_size=world_size,
-        timeout=timedelta(seconds=60)
-    )
+class FailStop(FaultInjection):
+    def __init__(self, rank, fault_rank, fault_iteration):
+        super().__init__(rank, fault_rank)
+        self.fault_iteration = fault_iteration
 
-    device = torch.device(f"cuda:{rank}")
-    torch.cuda.set_device(device)
+    def should_inject(self, iteration):
+        return self.rank == self.fault_rank and iteration == self.fault_iteration
 
-    print(f"Rank {rank}: started on {device}", flush=True)
-
-    try:
-        # Step 1: all ranks do a small normal collective first
-        tensor = torch.ones(10, device=device) * (rank + 1)
-        print(f"Rank {rank}: before warmup all_reduce = {tensor}", flush=True)
-        dist.all_reduce(tensor)
-        print(f"Rank {rank}: after warmup all_reduce = {tensor}", flush=True)
-
+    def inject(self):
         # Small sync point
         dist.barrier()
+        # only fault rank triggers OOM after NCCL is already active
+        print(f"Rank {self.rank}: injecting delayed CUDA OOM", flush=True)
+        time.sleep(3)
+        allocations = []
+        while True:
+            # Allocate chunks gradually until OOM happens
+            x = torch.empty((256, 1024, 1024), device=device)
+            allocations.append(x)
 
-        # Step 2: only fault rank triggers OOM after NCCL is already active
-        if rank == fault_rank:
-            print(f"Rank {rank}: injecting delayed CUDA OOM", flush=True)
-            time.sleep(3)
 
-            allocations = []
-            while True:
-                # Allocate chunks gradually until OOM happens
-                x = torch.empty((256, 1024, 1024), device=device)
-                allocations.append(x)
+def run_fault_oom(rank, world_size, fault_rank, run_dir, label_csv, master_port):
+    fault_injection = FailStop(rank, fault_rank, fault_iteration=0)
 
-        else:
-            # Non-fault ranks attempt another collective and may hang/fail after peer dies
-            tensor2 = torch.ones(10, device=device) * (rank + 10)
-            print(f"Rank {rank}: before second all_reduce = {tensor2}", flush=True)
-            dist.all_reduce(tensor2)
-            print(f"Rank {rank}: after second all_reduce = {tensor2}", flush=True)
-
-    except RuntimeError as e:
-        print(f"Rank {rank}: RuntimeError: {e}", flush=True)
-        raise
-
-    finally:
-        try:
-            dist.destroy_process_group()
-        except Exception:
-            pass
+    run_workload(
+        rank=rank,
+        world_size=world_size,
+        num_iterations=5,
+        workload_timout=timedelta(seconds=120),
+        fault_injection=fault_injection,
+        run_dir=run_dir,
+        master_port=master_port
+    )
 
 def main():
     if len(sys.argv) != 6:
