@@ -18,17 +18,22 @@ def main():
     master_port = sys.argv[4]
     label_csv = sys.argv[5]
     fault_scenario = sys.argv[6]
+    num_iteration = int(sys.argv[7])
+    workload_timeout = int(sys.argv[8])
 
     if fault_scenario == "fail_slow":
-        delay_seconds = int(sys.argv[7])
+        delay_seconds = int(sys.argv[9])
+        injected_interation = "all"
         fault_type = "gpu_straggler"
         oom_injection = False
     elif fault_scenario == "fail_stop":
         delay_seconds = None
+        injected_interation = int(sys.argv[9])
         fault_type = "cuda_oom"
         oom_injection = True
     elif fault_scenario == "normal":
         delay_seconds = None
+        injected_interation = None
         fault_type = "no_fault"
         oom_injection = False
     else:
@@ -55,6 +60,9 @@ def main():
         "oom_injection": oom_injection,
         "world_size": world_size,
         "master_port": master_port,
+        "fault_iteration": injected_interation,
+        "num_iteration": num_iteration,
+        "workload_timeout": workload_timeout,
         "status": "started"
     }
     write_metadata(run_dir, metadata)
@@ -63,7 +71,7 @@ def main():
         try:
             mp.spawn(
                 run_fault_slow,
-                args=(world_size, fault_rank, delay_seconds, run_dir, label_csv, master_port),
+                args=(world_size, num_iteration, workload_timeout, fault_rank, delay_seconds, run_dir, label_csv, master_port),
                 nprocs=world_size,
                 join=True
             )
@@ -77,7 +85,7 @@ def main():
         try:
             mp.spawn(
                 run_fault_oom,
-                args=(world_size, fault_rank, run_dir, label_csv, master_port),
+                args=(world_size, num_iteration, workload_timeout, fault_rank, run_dir, label_csv, master_port),
                 nprocs=world_size,
                 join=True
             )
@@ -91,7 +99,7 @@ def main():
         try:
             mp.spawn(
                 run_normal,
-                args=(world_size, run_dir, label_csv, master_port),
+                args=(world_size, num_iteration, workload_timeout, run_dir, label_csv, master_port),
                 nprocs=world_size,
                 join=True
             )
@@ -113,6 +121,9 @@ def main():
         "oom_injection": oom_injection,
         "world_size": world_size,
         "master_port": master_port,
+        "fault_iteration": injected_interation,
+        "num_iteration": num_iteration,
+        "workload_timeout": workload_timeout,
         "status": final_status
     })
 

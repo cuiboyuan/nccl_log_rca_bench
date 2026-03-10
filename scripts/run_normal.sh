@@ -6,6 +6,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 RUN_ID="${1:-oom_$(date +%Y%m%d_%H%M%S)}"
 MASTER_PORT="${2:-29601}"
+NUM_ITERATION="${3:-5}"
+WORKLOAD_TIMEOUT="${4:-120}" # in seconds
 
 RUN_DIR="$PROJECT_ROOT/phase1_runs/$RUN_ID"
 LABEL_CSV="$PROJECT_ROOT/labels/phase1_labels.csv"
@@ -21,6 +23,8 @@ python3 "$PROJECT_ROOT/workload/run_experiment.py" \
   "$MASTER_PORT" \
   "$LABEL_CSV" \
   "normal" \
+  "$NUM_ITERATION" \
+  "$WORKLOAD_TIMEOUT" \
   > "$RUN_DIR/stdout.log" \
   2> >(tee "$RUN_DIR/stderr.log" >&2) # print to both terminal and file
 

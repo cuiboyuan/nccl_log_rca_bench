@@ -16,14 +16,14 @@ class FailSlow(FaultInjection):
         time.sleep(self.delay_seconds)
 
 
-def run_fault_slow(rank, world_size, fault_rank, delay_seconds, run_dir, label_csv, master_port):
+def run_fault_slow(rank, world_size, num_iteration, workload_timeout, fault_rank, delay_seconds, run_dir, label_csv, master_port):
     fault_injection = FailSlow(rank, fault_rank, delay_seconds)
 
     run_workload(
         rank=rank,
         world_size=world_size,
-        num_iterations=5,
-        workload_timout=300,
+        num_iterations=num_iteration,
+        workload_timout=workload_timeout,
         fault_injection=fault_injection,
         run_dir=run_dir,
         master_port=master_port
