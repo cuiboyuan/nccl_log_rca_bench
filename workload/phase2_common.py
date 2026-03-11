@@ -32,6 +32,9 @@ def append_label_csv(label_csv: str, row: dict):
         "oom_injection",
         "world_size",
         "master_port",
+        "fault_iteration",
+        "num_iteration",
+        "workload_timeout",
         "status"
     ]
 
