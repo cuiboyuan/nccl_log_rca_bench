@@ -1,5 +1,7 @@
 import sys
 import time
+import threading
+from torch.multiprocessing.spawn import ProcessExitedException, ProcessRaisedException
 from datetime import timedelta
 
 import torch
@@ -67,49 +69,67 @@ def main():
     }
     write_metadata(run_dir, metadata)
 
+    start = time.time()
     if fault_scenario == "fail_slow":
-        try:
-            mp.spawn(
-                run_fault_slow,
-                args=(world_size, num_iteration, workload_timeout, fault_rank, delay_seconds, run_dir, label_csv, master_port),
-                nprocs=world_size,
-                join=True
-            )
-            final_status = "completed"
-        except Exception as e:
-            print(f"Main caught exception: {e}", flush=True)
-            final_status = "runtime_error"
-        metadata["status"] = final_status
+        ctx = mp.spawn(
+            run_fault_slow,
+            args=(world_size, num_iteration, workload_timeout, fault_rank, delay_seconds, run_dir, label_csv, master_port),
+            nprocs=world_size,
+            join=False
+        )
 
     elif fault_scenario == "fail_stop":
-        try:
-            mp.spawn(
-                run_fault_oom,
-                args=(world_size, num_iteration, workload_timeout, fault_rank, run_dir, label_csv, master_port),
-                nprocs=world_size,
-                join=True
-            )
-            final_status = "completed"
-        except Exception as e:
-            print(f"Main caught exception: {e}", flush=True)
-            final_status = "fault_triggered_or_failed"
-        metadata["status"] = final_status
+        ctx = mp.spawn(
+            run_fault_oom,
+            args=(world_size, num_iteration, workload_timeout, fault_rank, run_dir, label_csv, master_port),
+            nprocs=world_size,
+            join=False
+        )
 
     elif fault_scenario == "normal":
-        try:
-            mp.spawn(
-                run_normal,
-                args=(world_size, num_iteration, workload_timeout, run_dir, label_csv, master_port),
-                nprocs=world_size,
-                join=True
-            )
-            final_status = "completed"
-        except Exception as e:
-            print(f"Main caught exception: {e}", flush=True)
+        ctx = mp.spawn(
+            run_normal,
+            args=(world_size, num_iteration, workload_timeout, run_dir, label_csv, master_port),
+            nprocs=world_size,
+            join=False
+        )
+
+    # Terminate any remaining processes if we hit the workload timeout
+    timed_out_event = threading.Event()
+    def kill_all():
+        timed_out_event.set()
+        print("Global timeout reached, terminating all processes.")
+        for p in ctx.processes:
+            if p.is_alive():
+                p.terminate()
+
+    timer = threading.Timer(workload_timeout, kill_all)
+    timer.start()
+
+    try:
+        while not ctx.join(timeout=5):  # poll every 5s
+            pass
+        final_status = "completed"
+    except ProcessExitedException as e:
+        if timed_out_event.is_set():
+            print(f"Run timed out after {workload_timeout}s — processes terminated cleanly.")
+            final_status = "timeout"
+        else:
+            print(f"A process died unexpectedly: {e}")
             final_status = "failed"
-        metadata["status"] = final_status
+    except ProcessRaisedException as e:
+        if "OutOfMemoryError" in str(e) or "out of memory" in str(e).lower():
+            print(f"A process raised an OOM exception: {e}")
+            final_status = "oom_fault_triggered"
+        else:
+            print(f"A process raised an exception: {e}")
+            final_status = "failed"
+    finally:
+        timer.cancel()
+    total_time = time.time() - start
+    print(f"Total elapsed time: {total_time:.2f} seconds")
 
-
+    metadata["status"] = final_status
     write_metadata(run_dir, metadata)
 
     append_label_csv(label_csv, {

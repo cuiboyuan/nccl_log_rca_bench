@@ -7,7 +7,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 NUM_RUNS=3
 
 NUM_ITERATION=2
-WORKLOAD_TIMEOUT=60 # in seconds
+NUM_ITERATION=2
+WORKLOAD_TIMEOUT=20 # in seconds
 
 echo "=== Phase 1 batch start ==="
 

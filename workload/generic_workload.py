@@ -26,8 +26,8 @@ def run_workload(rank, world_size, num_iterations, workload_timout, fault_inject
     dist.init_process_group(
         backend="nccl",
         rank=rank,
-        world_size=world_size,
-        timeout=timedelta(seconds=workload_timout)
+        world_size=world_size
+        timeout=timedelta(seconds=300) # per-operation timeout to prevent hanging indefinitely on NCCL collectives
     )
 
     device = torch.device(f"cuda:{rank}")

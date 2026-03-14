@@ -13,7 +13,7 @@ DELAYS=(10 15 20)
 
 OOM_ITERATION=0
 NUM_ITERATION=2
-WORKLOAD_TIMEOUT=60 # in seconds
+WORKLOAD_TIMEOUT=20 # in seconds
 
 echo "=== Phase 2 batch start ==="
 

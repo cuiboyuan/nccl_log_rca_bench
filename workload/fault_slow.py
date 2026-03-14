@@ -13,7 +13,8 @@ class FailSlow(FaultInjection):
 
     def inject(self):
         print(f"Rank {self.rank}: injecting delay of {self.delay_seconds} seconds", flush=True)
-        time.sleep(self.delay_seconds)
+        for _ in range(self.delay_seconds):
+            time.sleep(1)
 
 
 def run_fault_slow(rank, world_size, num_iteration, workload_timeout, fault_rank, delay_seconds, run_dir, label_csv, master_port):
