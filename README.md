@@ -162,7 +162,7 @@ Columns written by current code:
 - `world_size`
 - `master_port`
 - `fault_iteration`
-- `num_iteration`
+- `total_iteration`
 - `workload_timeout`
 - `status`
 

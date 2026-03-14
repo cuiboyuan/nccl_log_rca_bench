@@ -61,7 +61,7 @@ def main():
         "world_size": world_size,
         "master_port": master_port,
         "fault_iteration": injected_interation,
-        "num_iteration": num_iteration,
+        "total_iteration": num_iteration,
         "workload_timeout": workload_timeout,
         "status": "started"
     }
@@ -122,7 +122,7 @@ def main():
         "world_size": world_size,
         "master_port": master_port,
         "fault_iteration": injected_interation,
-        "num_iteration": num_iteration,
+        "total_iteration": num_iteration,
         "workload_timeout": workload_timeout,
         "status": final_status
     })
