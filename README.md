@@ -13,7 +13,7 @@ It is designed for repeatable run collection and label generation for root-cause
 - `labels/`: CSV labels written during runs
 - `phase1_runs/`: Normal run artifacts
 - `phase2_runs/`: Faulted run artifacts (OOM and slow)
-- `baseline_logs/`: Example NCCL logs
+- `evaluation/`: Anomaly detection models and evaluation pipelines
 - `legacy_README.md`: Older setup notes
 
 ## Requirements
@@ -49,6 +49,12 @@ Run from repository root:
 cd /workspace/nccl_log_rca_bench
 ```
 
+### 0) Initialize submodules (required for evaluation)
+
+```bash
+git submodule update --init
+```
+
 ### 1) Phase 1 (normal baseline) batch
 
 ```bash
@@ -71,6 +77,17 @@ Defaults inside script:
 - Slow: 3 runs with predefined fault ranks and delays
 - 2 iterations per run
 - 60 second process-group timeout
+
+### 3) Run evaluations
+
+Once both phase 1 and phase 2 data are generated:
+
+```bash
+cd evaluation
+python evaluate.py
+```
+
+See [Evaluation](#evaluation) section below for more options and detailed information.
 
 ## Single Run Commands
 
@@ -167,6 +184,56 @@ Columns written by current code:
 - `status`
 
 Note: older CSV rows may have fewer columns from earlier code versions.
+
+## Evaluation
+
+This repository includes evaluation pipelines for anomaly detection on NCCL logs using multiple baseline models:
+
+### Supported Models
+
+- **LogBERT**: Transformer-based log anomaly detection
+- **DeepLog**: RNN-based sequential anomaly detection
+- **LogAnomaly**: Hybrid attention-based approach
+
+### Running Evaluations
+
+First, generate the NCCL log data by running the batch scripts:
+
+```bash
+# Generate phase 1 (normal) data
+bash scripts/batch_run_phase1.sh
+
+# Generate phase 2 (faulted) data
+bash scripts/batch_run_phase2.sh
+```
+
+Once data is generated, run the evaluation from the repository root:
+
+```bash
+cd evaluation
+python evaluate.py
+```
+
+Optional flags:
+
+- `--model logbert|deeplog|loganomaly`: Run specific model(s) (default: all)
+- `--skip-preprocess`: Skip data preprocessing step
+- `--skip-train`: Skip model training, use existing checkpoints
+- `--logbert-seq-threshold <float>`: LogBERT threshold (default: 0.5)
+- `--logdeep-seq-threshold <float>`: DeepLog/LogAnomaly threshold (default: 0.5)
+
+Example:
+
+```bash
+python evaluate.py --model logbert --logbert-seq-threshold 0.3
+python evaluate.py --model deeplog loganomaly --skip-preprocess
+```
+
+### Output
+
+- Trained models and vocabularies: `output/nccl/`
+- Per-model predictions: `output/nccl/<model_name>/`
+- Evaluation metrics (precision, recall, F1) against ground-truth labels
 
 ## Troubleshooting
 

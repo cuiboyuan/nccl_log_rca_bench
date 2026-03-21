@@ -2,9 +2,8 @@
 """
 NCCL log preprocessing for LogBERT evaluation.
 
-Reads NCCL log files from /workspace/dataset_nccl_log, extracts event
-templates using the Drain log parser, and writes LogBERT-compatible
-sequence files (train / test_normal / test_abnormal).
+Reads NCCL log files, extracts event templates using the Drain log parser, and
+writes LogBERT-compatible sequence files (train / test_normal / test_abnormal).
 
 Output directory: <workspace>/output/nccl/
   train            - space-separated event-ID sequences, one per line (phase1)
@@ -32,7 +31,7 @@ from logparser import Drain  # noqa: E402 (after sys.path setup)
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 
-DATASET_DIR = Path("/workspace/dataset_nccl_log")
+DATASET_DIR = EVAL_DIR.parent.resolve()
 OUTPUT_DIR = (EVAL_DIR / "../output/nccl").resolve()
 
 # ── NCCL log-line preprocessing ──────────────────────────────────────────────

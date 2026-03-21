@@ -17,9 +17,6 @@ Typical usage (run from the evaluation/ directory):
     python logbert_nccl.py vocab
     python logbert_nccl.py train
     python logbert_nccl.py predict
-
-Or run everything end-to-end:
-    python run_evaluation.py
 """
 
 import sys
