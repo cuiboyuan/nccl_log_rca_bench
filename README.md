@@ -6,15 +6,6 @@ This repository generates NCCL debug logs for distributed PyTorch workloads unde
 - Fail-slow fault (artificial delay on one rank)
 
 It is designed for repeatable run collection and label generation for root-cause analysis (RCA) experiments.
-## Repository Layout
-
-- `workload/`: Python workload and fault injection logic
-- `scripts/`: Shell entrypoints for single runs and batch runs
-- `labels/`: CSV labels written during runs
-- `phase1_runs/`: Normal run artifacts
-- `phase2_runs/`: Faulted run artifacts (OOM and slow)
-- `evaluation/`: Anomaly detection models and evaluation pipelines
-- `legacy_README.md`: Older setup notes
 
 ## Requirements
 
@@ -24,22 +15,6 @@ It is designed for repeatable run collection and label generation for root-cause
 - Python 3.11+
 
 The workload checks `torch.cuda.device_count()` and fails if fewer than 2 GPUs are available.
-
-## What Each Scenario Does
-
-- `normal`:
-  - Runs collective communication with no injected fault
-  - Output status is usually `completed`
-
-- `fail_stop` (OOM):
-  - Selected rank allocates GPU memory until CUDA OOM occurs
-  - Intended to trigger collective failure behavior
-  - Output status is often `fault_triggered_or_failed`
-
-- `fail_slow` (straggler):
-  - Selected rank sleeps before collectives each iteration
-  - Simulates a slow worker
-  - Output status is usually `completed`
 
 ## Quick Start
 
@@ -88,6 +63,16 @@ python evaluate.py
 ```
 
 See [Evaluation](#evaluation) section below for more options and detailed information.
+
+## Repository Layout
+
+- `workload/`: Python workload and fault injection logic
+- `scripts/`: Shell entrypoints for single runs and batch runs
+- `labels/`: CSV labels written during runs
+- `phase1_runs/`: Normal run artifacts
+- `phase2_runs/`: Faulted run artifacts (OOM and slow)
+- `evaluation/`: Anomaly detection models and evaluation pipelines
+- `legacy_README.md`: Older setup notes
 
 ## Single Run Commands
 
