@@ -81,7 +81,7 @@ def main():
     elif fault_scenario == "fail_stop":
         ctx = mp.spawn(
             run_fault_oom,
-            args=(world_size, num_iteration, workload_timeout, fault_rank, run_dir, label_csv, master_port),
+            args=(world_size, num_iteration, workload_timeout, fault_rank, injected_interation, run_dir, label_csv, master_port),
             nprocs=world_size,
             join=False
         )

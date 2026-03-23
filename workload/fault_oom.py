@@ -26,8 +26,8 @@ class FailStop(FaultInjection):
             allocations.append(x)
 
 
-def run_fault_oom(rank, world_size, num_iteration, workload_timeout, fault_rank, run_dir, label_csv, master_port):
-    fault_injection = FailStop(rank, fault_rank, fault_iteration=0)
+def run_fault_oom(rank, world_size, num_iteration, workload_timeout, fault_rank, injected_interation, run_dir, label_csv, master_port):
+    fault_injection = FailStop(rank, fault_rank, fault_iteration=injected_interation)
 
     run_workload(
         rank=rank,
