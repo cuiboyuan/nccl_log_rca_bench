@@ -6,14 +6,15 @@ Reads NCCL log files, extracts event templates using the Drain log parser, and
 writes LogBERT-compatible sequence files (train / test_normal / test_abnormal).
 
 Output directory: <workspace>/output/nccl/
-  train            - space-separated event-ID sequences, one per line (phase1)
-  test_normal      - same sequences as train (for evaluation)
-  test_abnormal    - phase2 sequences (OOM + slow runs, all anomalous)
-  vocab.pkl        - built by logbert_nccl.py vocab
-  event_map.json   - EventId (Drain) → integer mapping
-  manifest.json    - line-index → {run_id, log_file} for test files
-  drain_input/     - preprocessed log lines fed to Drain
-  drain_output/    - Drain's structured CSV output
+    train            - space-separated event-ID sequences, one per line (all phase1)
+    test_normal      - same sequences as train (for normal evaluation)
+    test_abnormal    - all phase2 sequences (for backward compatibility)
+    test_abnormal_*  - one file per phase2 fault type (e.g., cuda_oom / gpu_straggler)
+    vocab.pkl        - built by logbert_nccl.py vocab
+    event_map.json   - EventId (Drain) -> integer mapping
+    manifest.json    - line-index -> {run_id, log_file} for test files
+    drain_input/     - preprocessed log lines fed to Drain
+    drain_output/    - Drain's structured CSV output
 """
 
 import sys
@@ -91,9 +92,9 @@ def preprocess_logs(files: list, all_logs_path: Path) -> list:
             start = line_num
             with open(log_file_path, "r", encoding="utf-8", errors="replace") as f:
                 for raw_line in f:
-                    content = strip_header(raw_line)
-                    if is_valid_nccl_line(content):
-                        out_f.write(content + "\n")
+                    raw = raw_line.strip()
+                    if raw:
+                        out_f.write(raw + "\n")
                         line_num += 1
             manifest.append(
                 {
@@ -111,7 +112,7 @@ def preprocess_logs(files: list, all_logs_path: Path) -> list:
 
 def run_drain(all_logs_path: Path, drain_out_dir: Path) -> None:
     """Run the Drain log-template miner on the preprocessed log file."""
-    log_format = "NCCL <Level> <Content>"
+    log_format = "<Host> NCCL <Level> <Content>"
 
     # Regexes for variable parts that Drain should treat as wildcards.
     rex = [
@@ -178,29 +179,67 @@ def build_sequences(structured_csv: Path, manifest: list, event_map: dict) -> li
     return sequences
 
 
+def load_phase2_fault_types(dataset_dir: Path) -> dict:
+    """Return {run_id: fault_type} loaded from labels/phase2_labels.csv."""
+    labels_path = dataset_dir / "labels" / "phase2_labels.csv"
+    if not labels_path.exists():
+        raise FileNotFoundError(f"Missing phase2 labels file: {labels_path}")
+
+    df = pd.read_csv(labels_path, usecols=["run_id", "fault_type"])
+    df = df.dropna(subset=["run_id", "fault_type"]).copy()
+    df["run_id"] = df["run_id"].astype(str)
+    df["fault_type"] = df["fault_type"].astype(str)
+    return dict(zip(df["run_id"], df["fault_type"]))
+
+
 # ── Write LogBERT input files ─────────────────────────────────────────────────
 
-def write_output_files(sequences: list, output_dir: Path) -> None:
+def write_output_files(
+    sequences: list,
+    output_dir: Path,
+    phase2_fault_type_by_run: dict,
+) -> None:
     """
     Write:
-      train            – one line per phase1 log file (space-separated event IDs)
-      test_normal      – same as train (phase1 sequences used for normal test)
-      test_abnormal    – phase2 log file sequences
-      manifest.json    – maps line index → {run_id, log_file} for test files
+            train            - all phase1 sequences (space-separated event IDs)
+            test_normal      - same as train (phase1 normal evaluation)
+      test_abnormal    - all phase2 log file sequences
+      test_abnormal_*  - phase2 sequences split by fault_type
+      manifest.json    - maps line index -> {run_id, log_file} for test files
     """
     train_lines, test_normal_lines, test_abnormal_lines = [], [], []
     test_normal_manifest, test_abnormal_manifest = [], []
+    abnormal_lines_by_type = {}
+    abnormal_manifest_by_type = {}
 
-    for seq in sequences:
+    phase1_sequences = [s for s in sequences if s["phase"] == "phase1"]
+    phase2_sequences = [s for s in sequences if s["phase"] == "phase2"]
+
+    train_sequences = phase1_sequences
+    test_normal_sequences = phase1_sequences
+
+    for seq in train_sequences:
+        line = " ".join(map(str, seq["events"]))
+        train_lines.append(line)
+
+    for seq in test_normal_sequences:
         line = " ".join(map(str, seq["events"]))
         info = {"run_id": seq["run_id"], "log_file": seq["log_file"]}
-        if seq["phase"] == "phase1":
-            train_lines.append(line)
-            test_normal_lines.append(line)
-            test_normal_manifest.append(info)
-        else:
-            test_abnormal_lines.append(line)
-            test_abnormal_manifest.append(info)
+        test_normal_lines.append(line)
+        test_normal_manifest.append(info)
+
+    for seq in phase2_sequences:
+        line = " ".join(map(str, seq["events"]))
+        fault_type = phase2_fault_type_by_run.get(seq["run_id"], "unknown")
+        info = {
+            "run_id": seq["run_id"],
+            "log_file": seq["log_file"],
+            "fault_type": fault_type,
+        }
+        test_abnormal_lines.append(line)
+        test_abnormal_manifest.append(info)
+        abnormal_lines_by_type.setdefault(fault_type, []).append(line)
+        abnormal_manifest_by_type.setdefault(fault_type, []).append(info)
 
     def _write(path: Path, lines: list) -> None:
         with open(path, "w") as f:
@@ -210,16 +249,24 @@ def write_output_files(sequences: list, output_dir: Path) -> None:
     _write(output_dir / "test_normal", test_normal_lines)
     _write(output_dir / "test_abnormal", test_abnormal_lines)
 
+    for fault_type, lines in abnormal_lines_by_type.items():
+        _write(output_dir / f"test_abnormal_{fault_type}", lines)
+
     manifest = {
         "test_normal": test_normal_manifest,
         "test_abnormal": test_abnormal_manifest,
     }
+    for fault_type, items in abnormal_manifest_by_type.items():
+        manifest[f"test_abnormal_{fault_type}"] = items
+
     with open(output_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
 
     print(f"  Training sequences   : {len(train_lines)}")
     print(f"  Test-normal seqs     : {len(test_normal_lines)}")
     print(f"  Test-abnormal seqs   : {len(test_abnormal_lines)}")
+    for fault_type in sorted(abnormal_lines_by_type):
+        print(f"  Test-abnormal ({fault_type}) : {len(abnormal_lines_by_type[fault_type])}")
     print(f"  Output directory     : {output_dir}")
 
 
@@ -267,12 +314,13 @@ def main() -> None:
     print("Step 5/6  Building per-file event sequences")
     print("=" * 60)
     sequences = build_sequences(structured_csv, manifest, event_map)
+    phase2_fault_type_by_run = load_phase2_fault_types(DATASET_DIR)
     print(f"  Total sequences : {len(sequences)}")
 
     print("\n" + "=" * 60)
     print("Step 6/6  Writing LogBERT input files")
     print("=" * 60)
-    write_output_files(sequences, OUTPUT_DIR)
+    write_output_files(sequences, OUTPUT_DIR, phase2_fault_type_by_run)
 
 
 if __name__ == "__main__":

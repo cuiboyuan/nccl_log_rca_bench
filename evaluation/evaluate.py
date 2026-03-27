@@ -138,6 +138,55 @@ def compute_binary_metrics(df: pd.DataFrame) -> dict:
     }
 
 
+def get_abnormal_split_keys(manifest: dict) -> list[str]:
+    """
+    Return manifest keys for abnormal test splits.
+
+    Preference order:
+      1) Per-fault files written by data_process.py: test_abnormal_<fault_type>
+      2) Fallback legacy combined split: test_abnormal
+    """
+    split_keys = sorted(
+        k for k in manifest.keys()
+        if k.startswith("test_abnormal_") and k != "test_abnormal"
+    )
+    if split_keys:
+        return split_keys
+    return ["test_abnormal"]
+
+
+def fault_type_from_split_key(split_key: str) -> str:
+    if split_key == "test_abnormal":
+        return "all_abnormal"
+    return split_key.replace("test_abnormal_", "", 1)
+
+
+def compute_per_fault_metrics(
+    results_df: pd.DataFrame,
+    normal_run_ids: set[str],
+    model_name: str,
+    seq_threshold: float,
+) -> dict:
+    """Compute binary metrics for each abnormal fault type vs the same normal runs."""
+    abnormal_fault_types = sorted(
+        ft for ft in results_df["fault_type"].dropna().astype(str).unique()
+        if ft not in {"unknown", "nan"}
+    )
+
+    per_fault = {}
+    for fault_type in abnormal_fault_types:
+        fault_mask = results_df["fault_type"].astype(str) == fault_type
+        normal_mask = results_df["run_id"].astype(str).isin(normal_run_ids)
+        subset = results_df[normal_mask | fault_mask]
+        m = compute_binary_metrics(subset)
+        m["model"] = model_name
+        m["seq_threshold"] = seq_threshold
+        m["fault_type"] = fault_type
+        per_fault[fault_type] = m
+
+    return per_fault
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Shared preprocessing
 # ─────────────────────────────────────────────────────────────────────────────
@@ -341,12 +390,26 @@ def evaluate_logbert(options: dict, seq_threshold: float) -> dict:
 
     vocab    = WordVocab.load_vocab(options["vocab_path"])
     manifest = load_manifest()
+    abnormal_split_keys = get_abnormal_split_keys(manifest)
 
-    normal_results   = predict_file(model, vocab, options, str(OUTPUT_DIR / "test_normal"),   device)
-    abnormal_results = predict_file(model, vocab, options, str(OUTPUT_DIR / "test_abnormal"), device)
+    normal_results = predict_file(model, vocab, options, str(OUTPUT_DIR / "test_normal"), device)
+
+    abnormal_results_by_split = {}
+    for split_key in abnormal_split_keys:
+        split_path = OUTPUT_DIR / split_key
+        if not split_path.exists():
+            raise FileNotFoundError(
+                f"Missing abnormal split file: {split_path}. "
+                "Run preprocessing first to regenerate split files."
+            )
+        abnormal_results_by_split[split_key] = predict_file(
+            model, vocab, options, str(split_path), device
+        )
 
     print(f"\n  Normal   sequences scored: {sum(r is not None for r in normal_results)}")
-    print(f"  Abnormal sequences scored: {sum(r is not None for r in abnormal_results)}")
+    for split_key in abnormal_split_keys:
+        scored = sum(r is not None for r in abnormal_results_by_split[split_key])
+        print(f"  Abnormal ({fault_type_from_split_key(split_key)}) sequences scored: {scored}")
 
     def aggregate_to_runs(seq_results: list, manifest_entries: list) -> dict:
         run_preds: dict = {}
@@ -357,7 +420,15 @@ def evaluate_logbert(options: dict, seq_threshold: float) -> dict:
         return {k: int(v) for k, v in run_preds.items()}
 
     normal_preds   = aggregate_to_runs(normal_results,   manifest["test_normal"])
-    abnormal_preds = aggregate_to_runs(abnormal_results, manifest["test_abnormal"])
+
+    abnormal_preds = {}
+    for split_key in abnormal_split_keys:
+        split_preds = aggregate_to_runs(
+            abnormal_results_by_split[split_key],
+            manifest[split_key],
+        )
+        for rid, pred in split_preds.items():
+            abnormal_preds[rid] = max(abnormal_preds.get(rid, 0), pred)
 
     print("\n" + "=" * 60)
     print("LogBERT – comparing against ground-truth labels")
@@ -391,6 +462,12 @@ def evaluate_logbert(options: dict, seq_threshold: float) -> dict:
     metrics = compute_binary_metrics(results_df)
     metrics["seq_threshold"] = seq_threshold
     metrics["model"]         = "logbert"
+    metrics["by_fault_type"] = compute_per_fault_metrics(
+        results_df,
+        normal_run_ids=set(normal_preds.keys()),
+        model_name="logbert",
+        seq_threshold=seq_threshold,
+    )
 
     print(f"\n  Classification metrics (seq_threshold={seq_threshold:.2f})")
     print(f"  TP={metrics['TP']}  TN={metrics['TN']}  FP={metrics['FP']}  FN={metrics['FN']}")
@@ -398,6 +475,16 @@ def evaluate_logbert(options: dict, seq_threshold: float) -> dict:
     print(f"  Recall    : {metrics['recall']:.4f}")
     print(f"  F1 score  : {metrics['f1']:.4f}")
     print(f"  Accuracy  : {metrics['accuracy']:.4f}")
+
+    if metrics["by_fault_type"]:
+        print("\n  Per-fault metrics")
+        for fault_type, fm in metrics["by_fault_type"].items():
+            print(
+                f"    {fault_type}: "
+                f"P={fm['precision']:.4f} R={fm['recall']:.4f} "
+                f"F1={fm['f1']:.4f} Acc={fm['accuracy']:.4f} "
+                f"(TP={fm['TP']} TN={fm['TN']} FP={fm['FP']} FN={fm['FN']})"
+            )
 
     results_path = OUTPUT_DIR / "logbert_evaluation_results.csv"
     metrics_path = OUTPUT_DIR / "logbert_metrics.json"
@@ -499,6 +586,12 @@ def evaluate_logdeep_saved_results(
     metrics = compute_binary_metrics(df)
     metrics["seq_threshold"] = seq_threshold
     metrics["model"]         = model_name
+    metrics["by_fault_type"] = compute_per_fault_metrics(
+        df,
+        normal_run_ids={m["run_id"] for m in normal_manifest},
+        model_name=model_name,
+        seq_threshold=seq_threshold,
+    )
 
     return df, metrics
 
