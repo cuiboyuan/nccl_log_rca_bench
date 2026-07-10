@@ -1,0 +1,14 @@
+{
+  "run_id": "oom_trial_1_0_2_20260323_005000",
+  "scenario": "fail_stop",
+  "fault_type": "cuda_oom",
+  "affected_rank": 0,
+  "delay_seconds": null,
+  "oom_injection": true,
+  "world_size": 2,
+  "master_port": "29611",
+  "fault_iteration": 2,
+  "total_iteration": 20,
+  "workload_timeout": 120,
+  "status": "oom_fault_triggered"
+}
