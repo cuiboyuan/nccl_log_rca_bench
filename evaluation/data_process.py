@@ -32,7 +32,7 @@ from logparser import Drain  # noqa: E402 (after sys.path setup)
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 
-DATASET_DIR = EVAL_DIR.parent.resolve()
+DATASET_DIR = (EVAL_DIR / "../dataset").resolve()
 OUTPUT_DIR = (EVAL_DIR / "../output/nccl").resolve()
 
 # ── NCCL log-line preprocessing ──────────────────────────────────────────────
