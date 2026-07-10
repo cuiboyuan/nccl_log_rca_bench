@@ -42,17 +42,17 @@ OUTPUT_DIR = (EVAL_DIR / "../output/nccl").resolve()
 _HEADER_RE = re.compile(r"^[^\s:]+:\d+:\d+\s+(?:\[\d+\]\s+)?")
 
 
-def strip_header(line: str) -> str:
-    """Return just the 'NCCL LEVEL content' part of a raw NCCL log line."""
-    line = line.strip()
-    m = _HEADER_RE.match(line)
-    return line[m.end():] if m else line
+# def strip_header(line: str) -> str:
+#     """Return just the 'NCCL LEVEL content' part of a raw NCCL log line."""
+#     line = line.strip()
+#     m = _HEADER_RE.match(line)
+#     return line[m.end():] if m else line
 
 
-def is_valid_nccl_line(content: str) -> bool:
-    """True when content has the expected 'NCCL <Level> <text>' shape."""
-    parts = content.split(None, 2)
-    return len(parts) >= 3 and parts[0] == "NCCL"
+# def is_valid_nccl_line(content: str) -> bool:
+#     """True when content has the expected 'NCCL <Level> <text>' shape."""
+#     parts = content.split(None, 2)
+#     return len(parts) >= 3 and parts[0] == "NCCL"
 
 
 # ── File collection ───────────────────────────────────────────────────────────
@@ -113,15 +113,17 @@ def preprocess_logs(files: list, all_logs_path: Path) -> list:
 def run_drain(all_logs_path: Path, drain_out_dir: Path) -> None:
     """Run the Drain log-template miner on the preprocessed log file."""
     log_format = "<Host> NCCL <Level> <Content>"
+    # log_format = "<Content>"  # Drain will treat the whole line as content
 
     # Regexes for variable parts that Drain should treat as wildcards.
-    rex = [
-        r"0x[0-9a-fA-F]+",       # hex memory addresses / comm IDs
-        r"\d+\.\d+\.\d+\.\d+",   # IP addresses
-        r"nccl-[A-Za-z0-9]+",    # NCCL shared-memory segment names
-        r"/dev/shm/\S+",         # shared-memory paths
-        r"\b\d{4,}\b",           # long numeric IDs (pids, byte counts, …)
-    ]
+    # rex = [
+    #     r"0x[0-9a-fA-F]+",       # hex memory addresses / comm IDs
+    #     r"\d+\.\d+\.\d+\.\d+",   # IP addresses
+    #     r"nccl-[A-Za-z0-9]+",    # NCCL shared-memory segment names
+    #     r"/dev/shm/\S+",         # shared-memory paths
+    #     r"\b\d{4,}\b",           # long numeric IDs (pids, byte counts, …)
+    # ]
+    rex = []
 
     parser = Drain.LogParser(
         log_format,
