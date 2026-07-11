@@ -136,8 +136,8 @@ def run_drain(all_logs_path: Path, drain_out_dir: Path) -> None:
         log_format,
         indir=str(all_logs_path.parent) + "/",
         outdir=str(drain_out_dir) + "/",
-        depth=4,
-        st=0.5,
+        depth=4, # standard Drain config
+        st=0.4,
         rex=rex,
         keep_para=False,
     )
