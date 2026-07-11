@@ -119,8 +119,8 @@ def preprocess_logs(files: list, all_logs_path: Path) -> list:
 
 def run_drain(all_logs_path: Path, drain_out_dir: Path) -> None:
     """Run the Drain log-template miner on the preprocessed log file."""
-    log_format = "<Host> NCCL <Level> <Content>"
-    # log_format = "<Content>"  # Drain will treat the whole line as content
+    # log_format = "<Host> NCCL <Level> <Content>"
+    log_format = "<Content>"  # Drain will treat the whole line as content
 
     # Regexes for variable parts that Drain should treat as wildcards.
     # rex = [

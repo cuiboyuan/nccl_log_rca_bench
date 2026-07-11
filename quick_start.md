@@ -6,6 +6,6 @@ Evaluate:
     - `python evaluation/evaluate.py --model deeplog loganomaly --skip-preprocess`
     - LogBert has a bug at the moment (July 9)
 - LLM-based:
-    - `python evaluation/evaluate_logprompt.py --api-key <OPENAI_API_KEY>  --model gpt-5.4 --strategy CoT --skip-preprocess`
+    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --api-key <OPENAI_API_KEY>`
 - Log-counting:
     - `python evaluation/allreduce_count_baseline.py`
