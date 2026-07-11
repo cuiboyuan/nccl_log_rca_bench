@@ -303,7 +303,7 @@ def call_llm(
     api_key: str,
     model: str,
     system_prompt: str = "",
-    max_retries: int = 3,
+    max_retries: int = 8,
 ) -> str:
     """POST to an OpenAI-compatible chat completions endpoint."""
     headers = {
@@ -324,6 +324,19 @@ def call_llm(
             resp = requests.post(api_url, headers=headers, json=payload, timeout=90)
             resp.raise_for_status()
             return resp.json()["choices"][0]["message"]["content"]
+        except requests.HTTPError as exc:
+            if attempt == max_retries - 1:
+                raise
+            status = exc.response.status_code if exc.response is not None else None
+            if status == 429:
+                # Honour Retry-After header if present, otherwise exponential back-off
+                retry_after = exc.response.headers.get("Retry-After")
+                wait = int(retry_after) if retry_after and retry_after.isdigit() else min(2 ** attempt * 5, 120)
+                print(f"    Rate-limited (429), retrying in {wait}s…")
+            else:
+                wait = 2 ** attempt
+                print(f"    HTTP {status} error ({exc}), retrying in {wait}s…")
+            time.sleep(wait)
         except Exception as exc:
             if attempt == max_retries - 1:
                 raise
