@@ -121,11 +121,21 @@ def build_run_templates(manifest: dict, int_to_template: dict) -> dict:
     """
     Return {run_id: [template, ...]} — unique templates per run in first-seen
     order, collected across all sequence lines that belong to that run.
+    Includes both test and train splits so that training runs can be used as
+    InContext examples.
     """
     run_templates: dict[str, list] = {}
     run_seen:      dict[str, set]  = {}
 
-    split_keys = ["test_normal"] + _abnormal_split_keys(manifest)
+    train_abnormal_keys = sorted(
+        k for k in manifest
+        if k.startswith("train_abnormal_") and k != "train_abnormal"
+    )
+    train_abnormal_keys = train_abnormal_keys if train_abnormal_keys else ["train_abnormal"]
+    split_keys = (
+        ["train_normal"] + train_abnormal_keys
+        + ["test_normal"] + _abnormal_split_keys(manifest)
+    )
 
     for split_key in split_keys:
         if split_key not in manifest:
@@ -155,6 +165,58 @@ def build_run_templates(manifest: dict, int_to_template: dict) -> dict:
     return run_templates
 
 
+def _find_log_file(dataset_dir: Path, run_id: str, log_file: str):
+    """Locate a NCCL log file by searching phase1_runs and phase2_runs."""
+    for phase_dir in ("phase1_runs", "phase2_runs"):
+        path = dataset_dir / phase_dir / run_id / log_file
+        if path.exists():
+            return path
+    return None
+
+
+def build_run_raw_lines(manifest: dict, dataset_dir: Path) -> dict:
+    """
+    Return {run_id: [line, ...]} — unique raw log lines per run in first-seen
+    order, collected across all log files that belong to that run.
+    Includes both test and train splits so that training runs can be used as
+    InContext examples.
+    """
+    run_lines: dict[str, list] = {}
+    run_seen:  dict[str, set]  = {}
+
+    train_abnormal_keys = sorted(
+        k for k in manifest
+        if k.startswith("train_abnormal_") and k != "train_abnormal"
+    )
+    train_abnormal_keys = train_abnormal_keys if train_abnormal_keys else ["train_abnormal"]
+    split_keys = (
+        ["train_normal"] + train_abnormal_keys
+        + ["test_normal"] + _abnormal_split_keys(manifest)
+    )
+
+    for split_key in split_keys:
+        if split_key not in manifest:
+            continue
+        for entry in manifest[split_key]:
+            run_id   = entry["run_id"]
+            log_file = entry["log_file"]
+            log_path = _find_log_file(dataset_dir, run_id, log_file)
+            if log_path is None:
+                print(f"  Warning: log file not found: {run_id}/{log_file}")
+                continue
+            if run_id not in run_lines:
+                run_lines[run_id] = []
+                run_seen[run_id]  = set()
+            with open(log_path, encoding="utf-8", errors="replace") as f:
+                for raw_line in f:
+                    line = raw_line.strip()
+                    if line and line not in run_seen[run_id]:
+                        run_lines[run_id].append(line)
+                        run_seen[run_id].add(line)
+
+    return run_lines
+
+
 # ── Prompt construction ───────────────────────────────────────────────────────
 
 DEFAULT_SYSTEM = (
@@ -163,15 +225,19 @@ DEFAULT_SYSTEM = (
     "runs and determine whether the run is normal or anomalous."
 )
 
+DEFAULT_COT_RULES = """\
+(a) Mark it normal when values (such as memory address, floating number and register value) in a log are invalid.
+(b) Mark it normal when lack of information.
+(c) Never consider <*> and missing values as abnormal patterns.
+(d) Mark it abnormal when and only when an alert is explicitly expressed in \
+textual content (such as keywords like error, warning, fail, or abort)."""
+
 _COT_USER = """\
 Classify the following NCCL distributed training run as normal or abnormal based \
-on its unique log event templates. Apply these rules:
-(a) Mark it normal when lack of information.
-(b) Never consider <*> and missing values as abnormal patterns.
-(c) Mark it abnormal when and only when an alert is explicitly expressed in \
-textual content (such as keywords like error, warning, fail, or abort).
+on its {log_desc}. Apply these rules:
+{rules}
 
-Log event templates observed in this run:
+{log_desc_cap} observed in this run:
 {templates}
 
 Concisely explain your reasoning, then give your final answer on its own line \
@@ -186,7 +252,7 @@ to the following labelled example runs (0 = normal, 1 = abnormal):
 {examples}
 
 Now classify this run. Never consider <*> and missing values as abnormal patterns.
-Log event templates observed in this run:
+{log_desc_cap} observed in this run:
 {templates}
 
 Organize your answer on its own line in exactly this format:
@@ -199,11 +265,20 @@ def _fmt_templates(templates: list) -> str:
     return "\n".join(f"({i + 1}) {t}" for i, t in enumerate(templates))
 
 
-def build_cot_prompt(templates: list) -> str:
-    return _COT_USER.format(templates=_fmt_templates(templates))
+def build_cot_prompt(
+    templates: list,
+    log_desc: str = "unique log event templates",
+    rules: str = DEFAULT_COT_RULES,
+) -> str:
+    return _COT_USER.format(
+        log_desc=log_desc,
+        log_desc_cap=log_desc.capitalize(),
+        rules=rules,
+        templates=_fmt_templates(templates),
+    )
 
 
-def build_incontext_prompt(templates: list, examples: list) -> str:
+def build_incontext_prompt(templates: list, examples: list, log_desc: str = "unique log event templates") -> str:
     """
     examples: list of dicts with keys {run_id, label, templates}.
     """
@@ -216,6 +291,7 @@ def build_incontext_prompt(templates: list, examples: list) -> str:
     return _INCONTEXT_USER.format(
         examples="\n\n".join(blocks),
         templates=_fmt_templates(templates),
+        log_desc_cap=log_desc.capitalize(),
     )
 
 
@@ -354,11 +430,12 @@ Examples:
     )
     parser.add_argument(
         "--system-prompt",
-        default=DEFAULT_SYSTEM,
+        default="",
         help=(
             "System message prepended to every API call. "
-            "Pass an empty string to disable (matches original LogPrompt behaviour). "
-            f"Default: the built-in NCCL expert description."
+            "Disabled by default (matches original LogPrompt behaviour). "
+            "Pass --system-prompt ... to enable; the built-in NCCL expert description "
+            f"is available in the DEFAULT_SYSTEM constant."
         ),
     )
     parser.add_argument(
@@ -387,8 +464,33 @@ Examples:
         help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
     )
     parser.add_argument(
-        "--output-dir", default=str(OUTPUT_DIR / "logprompt"),
-        help="Directory to write results (default: output/nccl/logprompt/)",
+        "--cot-rules", default=None, metavar="RULES",
+        help=(
+            "Custom rules string injected into the CoT prompt (replaces the built-in "
+            "a/b/c/d rules). Newlines are honoured. Mutually exclusive with "
+            "--cot-rules-file."
+        ),
+    )
+    parser.add_argument(
+        "--cot-rules-file", default=None, metavar="FILE",
+        help=(
+            "Path to a plain-text file whose contents replace the built-in CoT rules. "
+            "Mutually exclusive with --cot-rules."
+        ),
+    )
+    parser.add_argument(
+        "--log-type", default="parsed", choices=["parsed", "raw"],
+        help=(
+            "Input representation passed to the LLM: 'parsed' (default) uses "
+            "Drain-extracted event templates; 'raw' uses the original log lines directly."
+        ),
+    )
+    parser.add_argument(
+        "--output-dir", default=None,
+        help=(
+            "Directory to write results. Defaults to "
+            "output/nccl/logprompt/<strategy>_<log-type>_<model>/"
+        ),
     )
     args = parser.parse_args()
 
@@ -396,16 +498,33 @@ Examples:
         parser.error("--api-key is required (or set $OPENAI_API_KEY)")
     if args.strategy == "InContext" and not args.example_file:
         parser.error("--example-file is required for InContext strategy")
+    if args.cot_rules and args.cot_rules_file:
+        parser.error("--cot-rules and --cot-rules-file are mutually exclusive")
+
+    cot_rules = DEFAULT_COT_RULES
+    if args.cot_rules:
+        cot_rules = args.cot_rules
+    elif args.cot_rules_file:
+        with open(args.cot_rules_file) as _f:
+            cot_rules = _f.read().strip()
+
+    if args.output_dir is None:
+        safe_model = re.sub(r"[^\w.-]", "_", args.model)
+        rules_tag = "custom_cot_rules" if (args.cot_rules or args.cot_rules_file) else "default_cot_rules"
+        args.output_dir = str(
+            OUTPUT_DIR / "logprompt" / f"{args.strategy}_{args.log_type}_{safe_model}_{rules_tag}"
+        )
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if not args.skip_preprocess:
-        required = [
-            OUTPUT_DIR / "manifest.json",
-            OUTPUT_DIR / "event_map.json",
-            DRAIN_OUTPUT / "nccl_all.log_templates.csv",
-        ]
+        required = [OUTPUT_DIR / "manifest.json"]
+        if args.log_type == "parsed":
+            required += [
+                OUTPUT_DIR / "event_map.json",
+                DRAIN_OUTPUT / "nccl_all.log_templates.csv",
+            ]
         if any(not p.exists() for p in required):
             print("\n" + "=" * 60)
             print("Preprocessing – converting NCCL logs to sequences")
@@ -419,18 +538,33 @@ Examples:
     print("LogPrompt – loading data")
     print("=" * 60)
 
-    int_to_template = load_int_to_template()
     manifest        = load_manifest()
     labels_df       = load_labels()
 
     label_map = dict(zip(labels_df["run_id"].astype(str), labels_df["true_label"]))
     meta_map  = labels_df.set_index("run_id").to_dict("index")
 
-    run_templates = build_run_templates(manifest, int_to_template)
-    normal_run_ids = {e["run_id"] for e in manifest.get("test_normal", [])}
+    if args.log_type == "parsed":
+        int_to_template = load_int_to_template()
+        run_inputs = build_run_templates(manifest, int_to_template)
+    else:
+        int_to_template = {}
+        run_inputs = build_run_raw_lines(manifest, DATASET_DIR)
 
-    print(f"  Runs to evaluate        : {len(run_templates)}")
-    print(f"  Unique template vocab   : {len(int_to_template)}")
+    log_desc = (
+        "unique log event templates" if args.log_type == "parsed" else "raw log lines"
+    )
+    normal_run_ids = {e["run_id"] for e in manifest.get("test_normal", [])}
+    test_run_ids = normal_run_ids | {
+        e["run_id"]
+        for k in manifest
+        if k.startswith("test_abnormal")
+        for e in manifest[k]
+    }
+
+    print(f"  Runs to evaluate        : {len(test_run_ids)}")
+    if args.log_type == "parsed":
+        print(f"  Unique template vocab   : {len(int_to_template)}")
 
     # ── InContext: build example list ─────────────────────────────────────────
 
@@ -443,13 +577,13 @@ Examples:
             if lbl not in ("normal", "abnormal"):
                 print(f"  Warning: skipping example run {rid} with unknown label '{lbl}'")
                 continue
-            if rid not in run_templates:
+            if rid not in run_inputs:
                 print(f"  Warning: example run {rid} not found in processed data, skipping")
                 continue
             incontext_examples.append({
                 "run_id":    rid,
                 "label":     lbl,
-                "templates": run_templates[rid],
+                "templates": run_inputs[rid],
             })
         print(f"  InContext examples      : {len(incontext_examples)}")
         if not incontext_examples:
@@ -464,17 +598,19 @@ Examples:
     rows = []
     unparseable_count = 0
 
-    for idx, (run_id, templates) in enumerate(sorted(run_templates.items()), 1):
+    for idx, (run_id, log_inputs) in enumerate(
+        sorted((rid, inp) for rid, inp in run_inputs.items() if rid in test_run_ids), 1
+    ):
         print(
-            f"  [{idx:>3}/{len(run_templates)}] {run_id}  "
-            f"({len(templates)} unique templates)",
+            f"  [{idx:>3}/{len(test_run_ids)}] {run_id}  "
+            f"({len(log_inputs)} {log_desc})",
             end=" … ", flush=True,
         )
 
         if args.strategy == "CoT":
-            prompt = build_cot_prompt(templates)
+            prompt = build_cot_prompt(log_inputs, log_desc, cot_rules)
         else:
-            prompt = build_incontext_prompt(templates, incontext_examples)
+            prompt = build_incontext_prompt(log_inputs, incontext_examples, log_desc)
 
         response = call_llm(prompt, args.api_url, args.api_key, args.model,
                             system_prompt=args.system_prompt)
@@ -495,6 +631,10 @@ Examples:
             "true_label": int(label_map.get(run_id, -1)),
             "pred_label": pred,
             "correct":    int(pred == int(label_map.get(run_id, -1))),
+            "log_type":   args.log_type,
+            "strategy":   args.strategy,
+            "model":      args.model,
+            "prompt":     prompt,
             "response":   response,
         })
 
@@ -518,6 +658,7 @@ Examples:
     metrics["model"]       = "logprompt"
     metrics["strategy"]    = args.strategy
     metrics["llm_model"]   = args.model
+    metrics["log_type"]    = args.log_type
     metrics["by_fault_type"] = compute_per_fault_metrics(eval_df, normal_run_ids)
 
     print(f"\n  TP={metrics['TP']}  TN={metrics['TN']}  FP={metrics['FP']}  FN={metrics['FN']}")
@@ -541,11 +682,11 @@ Examples:
     metrics_json   = output_dir / "logprompt_metrics.json"
     responses_jsonl = output_dir / "logprompt_responses.jsonl"
 
-    results_df.drop(columns=["response"]).to_csv(results_csv, index=False)
+    results_df.drop(columns=["response", "prompt"]).to_csv(results_csv, index=False)
 
     with open(responses_jsonl, "w") as f:
         for row in rows:
-            f.write(json.dumps({"run_id": row["run_id"], "response": row["response"]}) + "\n")
+            f.write(json.dumps({"run_id": row["run_id"], "prompt": row["prompt"], "response": row["response"]}) + "\n")
 
     with open(metrics_json, "w") as f:
         json.dump(metrics, f, indent=2)
