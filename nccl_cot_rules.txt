@@ -1,0 +1,4 @@
+(a) Mark it normal when all collective operations are completed successfully in every rank.
+(b) Mark it normal when lack of information.
+(c) Never consider <*> and missing values as abnormal patterns.
+(d) Mark it abnormal when one or more collective operations are not completed successfully in any rank.

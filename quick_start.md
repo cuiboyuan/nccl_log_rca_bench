@@ -12,5 +12,11 @@ Evaluate:
     - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --api-key <OPENAI_API_KEY>`
 - LLM-based, in-context strategy:
     - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy InContext --skip-preprocess --example-file incontext_examples.csv --api-key <OPENAI_API_KEY>`
-- LLM-based, CoT strategy, default rules:
-    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --api-key <OPENAI_API_KEY>`
+- LLM-based, CoT strategy, custom rules:
+    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --cot-rules-file nccl_cot_rules.txt --api-key <OPENAI_API_KEY>`
+- LLM-based, CoT strategy, default rules, raw logs:
+    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --log-type raw --api-key <OPENAI_API_KEY>`
+- LLM-based, in-context strategy, raw logs:
+    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy InContext --skip-preprocess --log-type raw --example-file incontext_examples.csv --api-key <OPENAI_API_KEY>`
+- LLM-based, CoT strategy, custom rules, raw logs:
+    - `python evaluation/evaluate_logprompt.py --model gpt-5.4 --strategy CoT --skip-preprocess --log-type raw --cot-rules-file nccl_cot_rules.txt --api-key <OPENAI_API_KEY>`
