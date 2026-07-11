@@ -101,30 +101,49 @@ def classify_run(run_dir: Path) -> dict:
 
 # ── Dataset traversal ─────────────────────────────────────────────────────────
 
-def collect_run_dirs(dataset_dir: Path) -> list[tuple[str, Path]]:
+def collect_test_run_dirs(
+    dataset_dir: Path, manifest_path: Path
+) -> list[tuple[str, Path, int, str]]:
     """
-    Return [(phase, run_dir), ...] for every run directory in the dataset.
-    phase is 'phase1' (normal) or 'phase2' (anomalous).
+    Return [(phase, run_dir, true_label, fault_type), ...] for the unique runs
+    listed in manifest.json's ``test_normal`` and ``test_abnormal`` splits only.
     """
+    with open(manifest_path, "r", encoding="utf-8") as fh:
+        manifest = json.load(fh)
+
+    # Collect unique run_ids with their label / fault_type from the manifest.
+    # Use an ordered dict so we don't double-count multi-rank entries.
+    run_meta: dict[str, dict] = {}
+    for entry in manifest.get("test_normal", []):
+        rid = entry["run_id"]
+        if rid not in run_meta:
+            run_meta[rid] = {"true_label": 0, "fault_type": "no_fault"}
+
+    for entry in manifest.get("test_abnormal", []):
+        rid = entry["run_id"]
+        if rid not in run_meta:
+            run_meta[rid] = {
+                "true_label": 1,
+                "fault_type": entry.get("fault_type", "unknown"),
+            }
+
+    # Resolve each run_id to its directory (phase1 = normal, phase2 = abnormal).
+    phase_map = {
+        "phase1_runs": "phase1",
+        "phase2_runs": "phase2",
+    }
     entries = []
-    for subdir_name, phase in [("phase1_runs", "phase1"), ("phase2_runs", "phase2")]:
-        phase_dir = dataset_dir / subdir_name
-        if not phase_dir.exists():
-            continue
-        for run_dir in sorted(phase_dir.iterdir()):
+    for rid, meta in run_meta.items():
+        found = False
+        for subdir_name, phase in phase_map.items():
+            run_dir = dataset_dir / subdir_name / rid
             if run_dir.is_dir():
-                entries.append((phase, run_dir))
+                entries.append((phase, run_dir, meta["true_label"], meta["fault_type"]))
+                found = True
+                break
+        if not found:
+            print(f"  WARNING: run_id '{rid}' not found in dataset, skipping.")
     return entries
-
-
-# ── Label loading ─────────────────────────────────────────────────────────────
-
-def load_labels(dataset_dir: Path) -> pd.DataFrame:
-    phase1 = pd.read_csv(dataset_dir / "labels" / "phase1_labels.csv")
-    phase2 = pd.read_csv(dataset_dir / "labels" / "phase2_labels.csv")
-    phase1["true_label"] = 0
-    phase2["true_label"] = 1
-    return pd.concat([phase1, phase2], ignore_index=True)
 
 
 # ── Metrics ───────────────────────────────────────────────────────────────────
@@ -172,24 +191,26 @@ def compute_per_fault_metrics(df: pd.DataFrame) -> dict:
 
 def main() -> None:
     print("=" * 60)
-    print("AllReduce-count baseline")
+    print("AllReduce-count baseline  (test split only)")
     print("=" * 60)
 
-    run_dirs  = collect_run_dirs(DATASET_DIR)
-    labels_df = load_labels(DATASET_DIR)
+    manifest_path = OUTPUT_DIR / "manifest.json"
+    if not manifest_path.exists():
+        sys.exit(
+            f"ERROR: manifest not found at {manifest_path}\n"
+            "Run  python evaluation/data_process.py  first."
+        )
 
-    label_map = dict(zip(labels_df["run_id"], labels_df["true_label"]))
-    meta_map  = labels_df.set_index("run_id").to_dict("index")
+    run_dirs = collect_test_run_dirs(DATASET_DIR, manifest_path)
+    print(f"  Evaluating {len(run_dirs)} test runs (test_normal + test_abnormal)")
 
     rows = []
-    for phase, run_dir in run_dirs:
+    for phase, run_dir, true_label, fault_type in run_dirs:
         run_id = run_dir.name
         result = classify_run(run_dir)
 
-        true_label = label_map.get(run_id, -1)
-        fault_type = meta_map.get(run_id, {}).get("fault_type", "unknown")
-        scenario   = meta_map.get(run_id, {}).get("scenario",   "unknown")
         pred_label = result["pred_label"]
+        scenario   = "normal" if true_label == 0 else fault_type
 
         print(
             f"  {run_id}: rank_counts={result['rank_counts']}  "

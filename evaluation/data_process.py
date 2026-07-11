@@ -3,20 +3,27 @@
 NCCL log preprocessing for LogBERT evaluation.
 
 Reads NCCL log files, extracts event templates using the Drain log parser, and
-writes LogBERT-compatible sequence files (train / test_normal / test_abnormal).
+writes LogBERT-compatible sequence files.
+
+Usage:
+    python data_process.py [--train-ratio 0.8]
 
 Output directory: <workspace>/output/nccl/
-    train            - space-separated event-ID sequences, one per line (all phase1)
-    test_normal      - same sequences as train (for normal evaluation)
-    test_abnormal    - all phase2 sequences (for backward compatibility)
-    test_abnormal_*  - one file per phase2 fault type (e.g., cuda_oom / gpu_straggler)
+    train_normal              - training portion of phase1 sequences (configurable split)
+    train                     - alias for train_normal (backward compatibility)
+    test_normal               - test portion of phase1 sequences
+    train_abnormal            - training portion of all phase2 sequences
+    test_abnormal             - test portion of all phase2 sequences
+    train_abnormal_<type>     - training portion of phase2 sequences per fault type
+    test_abnormal_<type>      - test portion of phase2 sequences per fault type
     vocab.pkl        - built by logbert_nccl.py vocab
     event_map.json   - EventId (Drain) -> integer mapping
-    manifest.json    - line-index -> {run_id, log_file} for test files
+    manifest.json    - line-index -> {run_id, log_file} for all split files
     drain_input/     - preprocessed log lines fed to Drain
     drain_output/    - Drain's structured CSV output
 """
 
+import argparse
 import sys
 import os
 import re
@@ -196,85 +203,111 @@ def load_phase2_fault_types(dataset_dir: Path) -> dict:
 
 # ── Write LogBERT input files ─────────────────────────────────────────────────
 
+def _split(items: list, train_ratio: float) -> tuple:
+    """Split *items* into (train, test) using the given ratio (deterministic)."""
+    n_train = max(1, int(len(items) * train_ratio)) if items else 0
+    return items[:n_train], items[n_train:]
+
+
 def write_output_files(
     sequences: list,
     output_dir: Path,
     phase2_fault_type_by_run: dict,
+    normal_train_ratio: float = 0.8,
+    abnormal_train_ratio: float = 0.8,
 ) -> None:
     """
     Write:
-            train            - all phase1 sequences (space-separated event IDs)
-            test_normal      - same as train (phase1 normal evaluation)
-      test_abnormal    - all phase2 log file sequences
-      test_abnormal_*  - phase2 sequences split by fault_type
-      manifest.json    - maps line index -> {run_id, log_file} for test files
+      train_normal              - training portion of phase1 sequences
+      train                     - alias for train_normal (backward compatibility)
+      test_normal               - test portion of phase1 sequences
+      train_abnormal            - training portion of all phase2 sequences
+      test_abnormal             - test portion of all phase2 sequences
+      train_abnormal_<type>     - training portion of phase2 per fault type
+      test_abnormal_<type>      - test portion of phase2 per fault type
+      manifest.json             - maps split name -> list of {run_id, log_file} entries
     """
-    train_lines, test_normal_lines, test_abnormal_lines = [], [], []
-    test_normal_manifest, test_abnormal_manifest = [], []
-    abnormal_lines_by_type = {}
-    abnormal_manifest_by_type = {}
-
     phase1_sequences = [s for s in sequences if s["phase"] == "phase1"]
     phase2_sequences = [s for s in sequences if s["phase"] == "phase2"]
 
-    train_sequences = phase1_sequences
-    test_normal_sequences = phase1_sequences
+    # ── Normal (phase1) split ────────────────────────────────────────────────
+    train_normal_seqs, test_normal_seqs = _split(phase1_sequences, normal_train_ratio)
 
-    for seq in train_sequences:
-        line = " ".join(map(str, seq["events"]))
-        train_lines.append(line)
-
-    for seq in test_normal_sequences:
-        line = " ".join(map(str, seq["events"]))
-        info = {"run_id": seq["run_id"], "log_file": seq["log_file"]}
-        test_normal_lines.append(line)
-        test_normal_manifest.append(info)
-
+    # ── Abnormal (phase2) split per fault type ───────────────────────────────
+    seqs_by_type: dict = {}
     for seq in phase2_sequences:
-        line = " ".join(map(str, seq["events"]))
         fault_type = phase2_fault_type_by_run.get(seq["run_id"], "unknown")
-        info = {
-            "run_id": seq["run_id"],
-            "log_file": seq["log_file"],
-            "fault_type": fault_type,
-        }
-        test_abnormal_lines.append(line)
-        test_abnormal_manifest.append(info)
-        abnormal_lines_by_type.setdefault(fault_type, []).append(line)
-        abnormal_manifest_by_type.setdefault(fault_type, []).append(info)
+        seqs_by_type.setdefault(fault_type, []).append(seq)
+
+    train_abnormal_by_type: dict = {}
+    test_abnormal_by_type: dict = {}
+    for fault_type, seqs in seqs_by_type.items():
+        tr, te = _split(seqs, abnormal_train_ratio)
+        train_abnormal_by_type[fault_type] = tr
+        test_abnormal_by_type[fault_type] = te
+
+    # Flatten combined abnormal lists
+    train_abnormal_seqs = [s for seqs in train_abnormal_by_type.values() for s in seqs]
+    test_abnormal_seqs  = [s for seqs in test_abnormal_by_type.values()  for s in seqs]
+
+    # ── Helpers ──────────────────────────────────────────────────────────────
+    def _to_lines(seqs):
+        return [" ".join(map(str, s["events"])) for s in seqs]
+
+    def _to_manifest(seqs, include_fault_type=False):
+        result = []
+        for s in seqs:
+            entry = {"run_id": s["run_id"], "log_file": s["log_file"]}
+            if include_fault_type:
+                entry["fault_type"] = phase2_fault_type_by_run.get(s["run_id"], "unknown")
+            result.append(entry)
+        return result
 
     def _write(path: Path, lines: list) -> None:
         with open(path, "w") as f:
             f.write("\n".join(lines) + "\n")
 
-    _write(output_dir / "train", train_lines)
-    _write(output_dir / "test_normal", test_normal_lines)
-    _write(output_dir / "test_abnormal", test_abnormal_lines)
+    # ── Write files ──────────────────────────────────────────────────────────
+    train_normal_lines = _to_lines(train_normal_seqs)
+    _write(output_dir / "train_normal", train_normal_lines)
+    _write(output_dir / "train", train_normal_lines)          # backward compat
 
-    for fault_type, lines in abnormal_lines_by_type.items():
-        _write(output_dir / f"test_abnormal_{fault_type}", lines)
+    _write(output_dir / "test_normal",   _to_lines(test_normal_seqs))
+    _write(output_dir / "train_abnormal", _to_lines(train_abnormal_seqs))
+    _write(output_dir / "test_abnormal",  _to_lines(test_abnormal_seqs))
 
+    for fault_type in sorted(seqs_by_type):
+        _write(output_dir / f"train_abnormal_{fault_type}", _to_lines(train_abnormal_by_type[fault_type]))
+        _write(output_dir / f"test_abnormal_{fault_type}",  _to_lines(test_abnormal_by_type[fault_type]))
+
+    # ── Manifest ─────────────────────────────────────────────────────────────
     manifest = {
-        "test_normal": test_normal_manifest,
-        "test_abnormal": test_abnormal_manifest,
+        "train_normal": _to_manifest(train_normal_seqs),
+        "test_normal":  _to_manifest(test_normal_seqs),
+        "train_abnormal": _to_manifest(train_abnormal_seqs, include_fault_type=True),
+        "test_abnormal":  _to_manifest(test_abnormal_seqs,  include_fault_type=True),
     }
-    for fault_type, items in abnormal_manifest_by_type.items():
-        manifest[f"test_abnormal_{fault_type}"] = items
+    for fault_type in sorted(seqs_by_type):
+        manifest[f"train_abnormal_{fault_type}"] = _to_manifest(train_abnormal_by_type[fault_type])
+        manifest[f"test_abnormal_{fault_type}"]  = _to_manifest(test_abnormal_by_type[fault_type])
 
     with open(output_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
 
-    print(f"  Training sequences   : {len(train_lines)}")
-    print(f"  Test-normal seqs     : {len(test_normal_lines)}")
-    print(f"  Test-abnormal seqs   : {len(test_abnormal_lines)}")
-    for fault_type in sorted(abnormal_lines_by_type):
-        print(f"  Test-abnormal ({fault_type}) : {len(abnormal_lines_by_type[fault_type])}")
+    print(f"  Train-normal seqs    : {len(train_normal_seqs)}")
+    print(f"  Test-normal seqs     : {len(test_normal_seqs)}")
+    print(f"  Train-abnormal seqs  : {len(train_abnormal_seqs)}")
+    print(f"  Test-abnormal seqs   : {len(test_abnormal_seqs)}")
+    for fault_type in sorted(seqs_by_type):
+        n_tr = len(train_abnormal_by_type[fault_type])
+        n_te = len(test_abnormal_by_type[fault_type])
+        print(f"  Abnormal ({fault_type:20s}) : {n_tr} train / {n_te} test")
     print(f"  Output directory     : {output_dir}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def main() -> None:
+def main(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> None:
     drain_input_dir = OUTPUT_DIR / "drain_input"
     drain_output_dir = OUTPUT_DIR / "drain_output"
     drain_input_dir.mkdir(parents=True, exist_ok=True)
@@ -322,8 +355,34 @@ def main() -> None:
     print("\n" + "=" * 60)
     print("Step 6/6  Writing LogBERT input files")
     print("=" * 60)
-    write_output_files(sequences, OUTPUT_DIR, phase2_fault_type_by_run)
+    print(f"  Normal  split ratio : {normal_train_ratio:.0%} train / {1 - normal_train_ratio:.0%} test")
+    print(f"  Abnormal split ratio: {abnormal_train_ratio:.0%} train / {1 - abnormal_train_ratio:.0%} test")
+    write_output_files(
+        sequences, OUTPUT_DIR, phase2_fault_type_by_run,
+        normal_train_ratio=normal_train_ratio,
+        abnormal_train_ratio=abnormal_train_ratio,
+    )
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Preprocess NCCL logs for anomaly detection models.")
+    parser.add_argument(
+        "--normal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of normal (phase1) sequences used for training (default: 0.8).",
+    )
+    parser.add_argument(
+        "--abnormal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
+    )
+    _args = parser.parse_args()
+    for _name, _val in [("--normal-train-ratio", _args.normal_train_ratio),
+                        ("--abnormal-train-ratio", _args.abnormal_train_ratio)]:
+        if not (0.0 < _val < 1.0):
+            parser.error(f"{_name} must be between 0 and 1 (exclusive).")
+    main(normal_train_ratio=_args.normal_train_ratio, abnormal_train_ratio=_args.abnormal_train_ratio)

@@ -191,11 +191,11 @@ def compute_per_fault_metrics(
 # Shared preprocessing
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_preprocessing() -> None:
+def run_preprocessing(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> None:
     print("\n" + "=" * 60)
     print("Shared preprocessing – converting NCCL logs to sequences")
     print("=" * 60)
-    data_process.main()
+    data_process.main(normal_train_ratio=normal_train_ratio, abnormal_train_ratio=abnormal_train_ratio)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -735,13 +735,28 @@ Examples:
             "keys to total predicted log keys (default: 0.5)."
         ),
     )
+    parser.add_argument(
+        "--normal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of normal (phase1) sequences used for training (default: 0.8).",
+    )
+    parser.add_argument(
+        "--abnormal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
+    )
     args = parser.parse_args()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Shared preprocessing (always runs once, regardless of model selection).
     if not args.skip_preprocess:
-        run_preprocessing()
+        run_preprocessing(normal_train_ratio=args.normal_train_ratio,
+                          abnormal_train_ratio=args.abnormal_train_ratio)
 
     labels_df = load_labels()
     manifest  = load_manifest()

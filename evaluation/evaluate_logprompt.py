@@ -5,6 +5,12 @@ LogPrompt evaluation for NCCL log anomaly detection.
 Uses Drain-extracted log event templates as input to an LLM, classifying each
 run as normal or anomalous.  No training is required.
 
+Based on:
+    Wang, Y. et al. "LogPrompt: Prompt Engineering Towards Zero-Shot and
+    Interpretable Log Analysis."  ICPC 2024 (long paper) / ICSE 2024 (poster).
+    arXiv:2308.07610  https://arxiv.org/abs/2308.07610
+    Original code: https://github.com/lunyiliu/LogPrompt
+
 Strategies
 ----------
 CoT       Chain-of-thought: ask the LLM to reason through the run's templates
@@ -367,6 +373,20 @@ Examples:
         help="Skip existence check for preprocessed files.",
     )
     parser.add_argument(
+        "--normal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of normal (phase1) sequences used for training (default: 0.8).",
+    )
+    parser.add_argument(
+        "--abnormal-train-ratio",
+        type=float,
+        default=0.8,
+        metavar="RATIO",
+        help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
+    )
+    parser.add_argument(
         "--output-dir", default=str(OUTPUT_DIR / "logprompt"),
         help="Directory to write results (default: output/nccl/logprompt/)",
     )
@@ -390,7 +410,8 @@ Examples:
             print("\n" + "=" * 60)
             print("Preprocessing – converting NCCL logs to sequences")
             print("=" * 60)
-            data_process.main()
+            data_process.main(normal_train_ratio=args.normal_train_ratio,
+                              abnormal_train_ratio=args.abnormal_train_ratio)
 
     # ── Load data ─────────────────────────────────────────────────────────────
 
