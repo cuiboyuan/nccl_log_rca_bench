@@ -18,7 +18,7 @@ Output directory: <workspace>/output/nccl/
     test_abnormal_<type>      - test portion of phase2 sequences per fault type
     vocab.pkl        - built by logbert_nccl.py vocab
     event_map.json   - EventId (Drain) -> integer mapping
-    manifest.json    - line-index -> {run_id, log_file} for all split files
+    manifest.json    - line-index -> {run_id} for all split files
     drain_input/     - preprocessed log lines fed to Drain
     drain_output/    - Drain's structured CSV output
 """
@@ -64,10 +64,10 @@ _HEADER_RE = re.compile(r"^[^\s:]+:\d+:\d+\s+(?:\[\d+\]\s+)?")
 
 # ── File collection ───────────────────────────────────────────────────────────
 
-def collect_log_files(dataset_dir: Path) -> list:
+def collect_runs(dataset_dir: Path) -> list:
     """
-    Return [(phase, run_id, Path)] for every NCCL log file in the dataset.
-    phase is 'phase1' (normal) or 'phase2' (anomalous).
+    Return [(phase, run_id, run_dir)] for every run directory that has a
+    timeline.json.  phase is 'phase1' (normal) or 'phase2' (anomalous).
     """
     entries = []
     for subdir_name, phase in [("phase1_runs", "phase1"), ("phase2_runs", "phase2")]:
@@ -75,30 +75,32 @@ def collect_log_files(dataset_dir: Path) -> list:
         if not phase_dir.exists():
             continue
         for run_dir in sorted(phase_dir.iterdir()):
-            if run_dir.is_dir():
-                for log_file in sorted(run_dir.glob("nccl_logs_*.txt")):
-                    entries.append((phase, run_dir.name, log_file))
+            if run_dir.is_dir() and (run_dir / "timeline.json").exists():
+                entries.append((phase, run_dir.name, run_dir))
     return entries
 
 
 # ── Preprocessing → single file for Drain ────────────────────────────────────
 
-def preprocess_logs(files: list, all_logs_path: Path) -> list:
+def preprocess_logs(runs: list, all_logs_path: Path) -> list:
     """
-    Strip log-line headers and write the cleaned content to *all_logs_path*
-    (one line per valid NCCL log entry).
+    Read each run's timeline.json and write lines to *all_logs_path* in
+    chronological (window) order, interleaving lines from all ranks.
 
-    Returns a manifest list: one dict per source file:
-        {start, end, phase, run_id, log_file}
+    Returns a manifest list: one dict per run:
+        {start, end, phase, run_id}
     where start/end are the half-open row range in all_logs_path.
     """
     manifest = []
     line_num = 0
     with open(all_logs_path, "w", encoding="utf-8") as out_f:
-        for phase, run_id, log_file_path in files:
+        for phase, run_id, run_dir in runs:
             start = line_num
-            with open(log_file_path, "r", encoding="utf-8", errors="replace") as f:
-                for raw_line in f:
+            timeline_path = run_dir / "timeline.json"
+            with open(timeline_path, "r", encoding="utf-8") as f:
+                timeline = json.load(f)
+            for window in timeline["windows"]:
+                for raw_line in window["lines"]:
                     raw = raw_line.strip()
                     if raw:
                         out_f.write(raw + "\n")
@@ -109,7 +111,6 @@ def preprocess_logs(files: list, all_logs_path: Path) -> list:
                     "end": line_num,
                     "phase": phase,
                     "run_id": run_id,
-                    "log_file": log_file_path.name,
                 }
             )
     return manifest
@@ -161,10 +162,10 @@ def build_event_map(templates_csv: Path) -> dict:
 
 def build_sequences(structured_csv: Path, manifest: list, event_map: dict) -> list:
     """
-    Convert the Drain structured CSV into per-log-file event sequences.
+    Convert the Drain structured CSV into per-run event sequences.
 
     Returns a list of dicts:
-        {phase, run_id, log_file, events: [int]}
+        {phase, run_id, events: [int]}
     Events unseen in the training templates are mapped to 1 (UNK token index).
     """
     df = pd.read_csv(structured_csv)
@@ -181,7 +182,6 @@ def build_sequences(structured_csv: Path, manifest: list, event_map: dict) -> li
             {
                 "phase": entry["phase"],
                 "run_id": entry["run_id"],
-                "log_file": entry["log_file"],
                 "events": events,
             }
         )
@@ -257,7 +257,7 @@ def write_output_files(
     def _to_manifest(seqs, include_fault_type=False):
         result = []
         for s in seqs:
-            entry = {"run_id": s["run_id"], "log_file": s["log_file"]}
+            entry = {"run_id": s["run_id"]}
             if include_fault_type:
                 entry["fault_type"] = phase2_fault_type_by_run.get(s["run_id"], "unknown")
             result.append(entry)
@@ -317,15 +317,15 @@ def main(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> 
     all_logs_path = drain_input_dir / "nccl_all.log"
 
     print("=" * 60)
-    print("Step 1/6  Collecting log files from dataset")
+    print("Step 1/6  Collecting runs from dataset")
     print("=" * 60)
-    files = collect_log_files(DATASET_DIR)
-    print(f"  Found {len(files)} log files across {len(set(r for _, r, _ in files))} runs")
+    runs = collect_runs(DATASET_DIR)
+    print(f"  Found {len(runs)} runs")
 
     print("\n" + "=" * 60)
-    print("Step 2/6  Stripping headers and writing unified log file")
+    print("Step 2/6  Writing unified log file in timeline order")
     print("=" * 60)
-    manifest = preprocess_logs(files, all_logs_path)
+    manifest = preprocess_logs(runs, all_logs_path)
     total_lines = manifest[-1]["end"] if manifest else 0
     print(f"  Total preprocessed NCCL lines : {total_lines}")
 

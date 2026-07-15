@@ -66,7 +66,7 @@ def generate_train_valid(data_path, window_size=20, adaptive_window=True,
     # coz in parallel computing in CUDA, odd number of samples reports issue when merging the result
     # num_session += num_session % 2
 
-    test_size = int(min(num_session, len(data_iter)) * valid_size)
+    test_size = max(1, int(min(num_session, len(data_iter)) * valid_size))
     # only even number of samples
     # test_size += test_size % 2
 
