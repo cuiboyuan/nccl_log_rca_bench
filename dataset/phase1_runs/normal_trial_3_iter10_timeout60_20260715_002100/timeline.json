@@ -1,0 +1,1181 @@
+{
+  "run_id": "normal_trial_3_iter10_timeout60_20260715_002100",
+  "rank_files": {
+    "0": "nccl_logs_2e194b931ff6_18958.txt",
+    "1": "nccl_logs_2e194b931ff6_18959.txt"
+  },
+  "windows": [
+    {
+      "second": 1784074866,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO Bootstrap : Using eth0:172.16.0.2<0>",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO NET/Plugin : dlerror=libnccl-net.so: cannot open shared object file: No such file or directory No plugin found (libnccl-net.so), using internal implementation",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclGetUniqueId(0xc38b37a0850ed0fa)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO cudaDriverVersion 12080",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO NCCL version 2.20.5+cuda12.4",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO init.cc:1732 Cuda Host Alloc Size 4 pointer 0x7dbb39600400",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Failed to open libibverbs.so[.1]",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO NET/Socket : Using [0]eth0:172.16.0.2<0>",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Using non-device net plugin version 0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Using network Socket",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO comm 0x411f8090 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 4f000 commId 0xc38b37a0850ed0fa - Init START",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO NET/Socket : GPU Direct RDMA Disabled for HCA 0 'eth0'",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO NCCL_P2P_LEVEL set by environment to LOC",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO === System : maxBw 24.0 totalBw 24.0 ===",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO CPU/0 (1/1/2)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO + PCI[5000.0] - NIC/0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO + PCI[24.0] - PCI/4B000 (1000c0101000ffff)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO               + PCI[24.0] - GPU/4F000 (0)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO               + PCI[24.0] - GPU/56000 (1)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO ==========================================",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO GPU/4F000 :GPU/4F000 (0/5000.000000/LOC) GPU/56000 (4/24.000000/PHB) CPU/0 (2/24.000000/PHB) ",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO GPU/56000 :GPU/4F000 (4/24.000000/PHB) GPU/56000 (0/5000.000000/LOC) CPU/0 (2/24.000000/PHB) ",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Setting affinity for GPU 0 to ff,ffff0000,00ffffff",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Pattern 4, crossNic 0, nChannels 1, bw 10.000000/10.000000, type PHB/PIX, sameChannels 1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO  0 : GPU/0 GPU/1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Pattern 1, crossNic 0, nChannels 1, bw 20.000000/20.000000, type PHB/PIX, sameChannels 1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO  0 : GPU/0 GPU/1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO comm 0x411f8090 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Tree 0 : -1 -> 0 -> 1/-1/-1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Tree 1 : -1 -> 0 -> 1/-1/-1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Channel 00/02 :    0   1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Channel 01/02 :    0   1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Ring 00 : 1 -> 0 -> 1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Ring 01 : 1 -> 0 -> 1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO P2P Chunksize set to 131072",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO UDS: Creating service thread comm 0x411f8090 rank 0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:40 Cuda Alloc Size 1152 pointer 0x7dbb3b200000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:43 Cuda Alloc Size 40 pointer 0x7dbb3b400000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:54 Cuda Alloc Size 8 pointer 0x7dbb3b600000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:40 Cuda Alloc Size 1152 pointer 0x7dbb3b800000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:43 Cuda Alloc Size 40 pointer 0x7dbb3ba00000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO channel.cc:54 Cuda Alloc Size 8 pointer 0x7dbb3bc00000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-RnIJrI",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-UPIzUZ",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-fp6R85",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-1aQant",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Connected all rings",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Connected all trees",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO   Algorithm   |                            Tree                  |                            Ring                  |                   CollNetDirect                  |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO  Max NThreads |            512 |            640 |            512 |            512 |            640 |            256 |              0 |              0 |            640 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   3.3 |    16.5/   0.0 |    14.1/  10.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   2.5 |    16.5/   0.0 |    14.1/  10.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   6.7 |    16.5/   0.0 |    14.1/  20.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     7.6/   6.7 |    16.5/   0.0 |    14.1/  20.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     AllReduce |     8.8/   2.4 |    17.8/   0.0 |    56.0/   9.2 |     8.6/   2.5 |    19.0/   0.0 |    19.8/  10.0 |     0.8/   0.0 |     0.8/   0.0 |    39.2/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO   Algorithm   |                    CollNetChain                  |                            NVLS                  |                        NVLSTree                  |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO   Protocol    |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |             LL |          LL128 |         Simple |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO  Max NThreads |              0 |              0 |            640 |              0 |              0 |            640 |              0 |              0 |            640 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     Broadcast |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO        Reduce |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     AllGather |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO ReduceScatter |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO     AllReduce |     0.0/   0.0 |     0.0/   0.0 |    35.6/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |     0.0/   0.0 |",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO 2 coll channels, 0 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO Mem Realloc old size 0, new size 8 pointer 0x7dbb20000bf0",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO Allocated 5767524 bytes of shared memory in /dev/shm/nccl-ik4qco",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO New proxy send connection 0 from local rank 0, transport 2",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO proxyProgressAsync opId=0x7dbb1b633290 op.type=1 op.reqBuff=0x7dbb20000bb0 op.respSize=16 done",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7dbb1b633290",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO Received and initiated operation=Init res=0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO resp.opId=0x7dbb1b633290 matches expected opId=0x7dbb1b633290",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7dbb20004f50",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO Allocated shareable buffer 0x7dbb3be00000 size 4194304 ipcDesc 0x7dbb20008e68",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO proxyProgressAsync opId=0x7dbb1b633290 op.type=2 op.reqBuff=0x7dbb20008e10 op.respSize=0 done",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO Received and initiated operation=SharedInit res=0",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO ncclPollProxyResponse Received new opId=0x7dbb1b633290",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO resp.opId=0x7dbb1b633290 matches expected opId=0x7dbb1b633290",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO init.cc:401 Cuda Alloc Size 8784 pointer 0x7dbb3c200000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO init.cc:429 Cuda Host Alloc Size 33554432 pointer 0x7dbb3c400000",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO init.cc:435 Cuda Host Alloc Size 128 pointer 0x7dbb39600600",
+        "2e194b931ff6:18958:19115 NCCL CALL ncclCommInitRank(0x411f8090, 2, 0xc38b37a0850ed0fa, 0, 0)",
+        "2e194b931ff6:18958:19115 [0] NCCL INFO comm 0x411f8090 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 4f000 commId 0xc38b37a0850ed0fa - Init COMPLETE",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 0 sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO cudaDriverVersion 12080",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO Bootstrap : Using eth0:172.16.0.2<0>",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO NET/Plugin : dlerror=libnccl-net.so: cannot open shared object file: No such file or directory No plugin found (libnccl-net.so), using internal implementation",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO init.cc:1732 Cuda Host Alloc Size 4 pointer 0x7f8a1f600400",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Failed to open libibverbs.so[.1]",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO NET/Socket : Using [0]eth0:172.16.0.2<0>",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Using non-device net plugin version 0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Using network Socket",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO comm 0x1614ce60 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 56000 commId 0xc38b37a0850ed0fa - Init START",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO NET/Socket : GPU Direct RDMA Disabled for HCA 0 'eth0'",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO NCCL_P2P_LEVEL set by environment to LOC",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO === System : maxBw 24.0 totalBw 24.0 ===",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO CPU/0 (1/1/2)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO + PCI[5000.0] - NIC/0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO + PCI[24.0] - PCI/4B000 (1000c0101000ffff)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO               + PCI[24.0] - GPU/4F000 (0)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO               + PCI[24.0] - GPU/56000 (1)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO ==========================================",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO GPU/4F000 :GPU/4F000 (0/5000.000000/LOC) GPU/56000 (4/24.000000/PHB) CPU/0 (2/24.000000/PHB) ",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO GPU/56000 :GPU/4F000 (4/24.000000/PHB) GPU/56000 (0/5000.000000/LOC) CPU/0 (2/24.000000/PHB) ",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Setting affinity for GPU 1 to ff,ffff0000,00ffffff",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Pattern 4, crossNic 0, nChannels 1, bw 10.000000/10.000000, type PHB/PIX, sameChannels 1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO  0 : GPU/0 GPU/1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Pattern 1, crossNic 0, nChannels 1, bw 20.000000/20.000000, type PHB/PIX, sameChannels 1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO  0 : GPU/0 GPU/1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO comm 0x1614ce60 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Tree 0 : 0 -> 1 -> -1/-1/-1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Tree 1 : 0 -> 1 -> -1/-1/-1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Ring 00 : 0 -> 1 -> 0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Ring 01 : 0 -> 1 -> 0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO P2P Chunksize set to 131072",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO UDS: Creating service thread comm 0x1614ce60 rank 1",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:40 Cuda Alloc Size 1152 pointer 0x7f8a21200000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:43 Cuda Alloc Size 40 pointer 0x7f8a21400000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:54 Cuda Alloc Size 8 pointer 0x7f8a21600000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:40 Cuda Alloc Size 1152 pointer 0x7f8a21800000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:43 Cuda Alloc Size 40 pointer 0x7f8a21a00000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO channel.cc:54 Cuda Alloc Size 8 pointer 0x7f8a21c00000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-96Kk9z",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Allocated 9637892 bytes of shared memory in /dev/shm/nccl-dSNFhU",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-9n0pq8",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Channel 00 : 1[1] -> 0[0] via SHM/direct/direct",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Allocated 4100 bytes of shared memory in /dev/shm/nccl-3rSNzF",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Channel 01 : 1[1] -> 0[0] via SHM/direct/direct",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Connected all rings",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Connected all trees",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO 2 coll channels, 0 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO Mem Realloc old size 0, new size 8 pointer 0x7f89fc004f20",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO Allocated 5767524 bytes of shared memory in /dev/shm/nccl-05T3ZV",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO New proxy send connection 0 from local rank 1, transport 2",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO proxyProgressAsync opId=0x7f8a07633290 op.type=1 op.reqBuff=0x7f89fc004ee0 op.respSize=16 done",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO ncclPollProxyResponse Received new opId=0x7f8a07633290",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO resp.opId=0x7f8a07633290 matches expected opId=0x7f8a07633290",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO Connected to proxy localRank 1 -> connection 0x7f89fc004f40",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO Received and initiated operation=Init res=0",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO Allocated shareable buffer 0x7f8a21e00000 size 4194304 ipcDesc 0x7f89fc008e58",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO proxyProgressAsync opId=0x7f8a07633290 op.type=2 op.reqBuff=0x7f89fc008e00 op.respSize=0 done",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO ncclPollProxyResponse Received new opId=0x7f8a07633290",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO resp.opId=0x7f8a07633290 matches expected opId=0x7f8a07633290",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO Received and initiated operation=SharedInit res=0",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO init.cc:401 Cuda Alloc Size 8784 pointer 0x7f8a22200000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO init.cc:429 Cuda Host Alloc Size 33554432 pointer 0x7f8a22400000",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO init.cc:435 Cuda Host Alloc Size 128 pointer 0x7f8a1f600600",
+        "2e194b931ff6:18959:19116 NCCL CALL ncclCommInitRank(0x1614ce60, 2, 0xc38b37a0850ed0fa, 1, 1)",
+        "2e194b931ff6:18959:19116 [1] NCCL INFO comm 0x1614ce60 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 56000 commId 0xc38b37a0850ed0fa - Init COMPLETE",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 0 sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO misc/utils.cc:235 memory stack hunk malloc(65536)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 0
+        },
+        {
+          "rank": 0,
+          "line_idx": 1
+        },
+        {
+          "rank": 0,
+          "line_idx": 2
+        },
+        {
+          "rank": 0,
+          "line_idx": 3
+        },
+        {
+          "rank": 0,
+          "line_idx": 4
+        },
+        {
+          "rank": 0,
+          "line_idx": 5
+        },
+        {
+          "rank": 0,
+          "line_idx": 6
+        },
+        {
+          "rank": 0,
+          "line_idx": 7
+        },
+        {
+          "rank": 0,
+          "line_idx": 8
+        },
+        {
+          "rank": 0,
+          "line_idx": 9
+        },
+        {
+          "rank": 0,
+          "line_idx": 10
+        },
+        {
+          "rank": 0,
+          "line_idx": 11
+        },
+        {
+          "rank": 0,
+          "line_idx": 12
+        },
+        {
+          "rank": 0,
+          "line_idx": 13
+        },
+        {
+          "rank": 0,
+          "line_idx": 14
+        },
+        {
+          "rank": 0,
+          "line_idx": 15
+        },
+        {
+          "rank": 0,
+          "line_idx": 16
+        },
+        {
+          "rank": 0,
+          "line_idx": 17
+        },
+        {
+          "rank": 0,
+          "line_idx": 18
+        },
+        {
+          "rank": 0,
+          "line_idx": 19
+        },
+        {
+          "rank": 0,
+          "line_idx": 20
+        },
+        {
+          "rank": 0,
+          "line_idx": 21
+        },
+        {
+          "rank": 0,
+          "line_idx": 22
+        },
+        {
+          "rank": 0,
+          "line_idx": 23
+        },
+        {
+          "rank": 0,
+          "line_idx": 24
+        },
+        {
+          "rank": 0,
+          "line_idx": 25
+        },
+        {
+          "rank": 0,
+          "line_idx": 26
+        },
+        {
+          "rank": 0,
+          "line_idx": 27
+        },
+        {
+          "rank": 0,
+          "line_idx": 28
+        },
+        {
+          "rank": 0,
+          "line_idx": 29
+        },
+        {
+          "rank": 0,
+          "line_idx": 30
+        },
+        {
+          "rank": 0,
+          "line_idx": 31
+        },
+        {
+          "rank": 0,
+          "line_idx": 32
+        },
+        {
+          "rank": 0,
+          "line_idx": 33
+        },
+        {
+          "rank": 0,
+          "line_idx": 34
+        },
+        {
+          "rank": 0,
+          "line_idx": 35
+        },
+        {
+          "rank": 0,
+          "line_idx": 36
+        },
+        {
+          "rank": 0,
+          "line_idx": 37
+        },
+        {
+          "rank": 0,
+          "line_idx": 38
+        },
+        {
+          "rank": 0,
+          "line_idx": 39
+        },
+        {
+          "rank": 0,
+          "line_idx": 40
+        },
+        {
+          "rank": 0,
+          "line_idx": 41
+        },
+        {
+          "rank": 0,
+          "line_idx": 42
+        },
+        {
+          "rank": 0,
+          "line_idx": 43
+        },
+        {
+          "rank": 0,
+          "line_idx": 44
+        },
+        {
+          "rank": 0,
+          "line_idx": 45
+        },
+        {
+          "rank": 0,
+          "line_idx": 46
+        },
+        {
+          "rank": 0,
+          "line_idx": 47
+        },
+        {
+          "rank": 0,
+          "line_idx": 48
+        },
+        {
+          "rank": 0,
+          "line_idx": 49
+        },
+        {
+          "rank": 0,
+          "line_idx": 50
+        },
+        {
+          "rank": 0,
+          "line_idx": 51
+        },
+        {
+          "rank": 0,
+          "line_idx": 52
+        },
+        {
+          "rank": 0,
+          "line_idx": 53
+        },
+        {
+          "rank": 0,
+          "line_idx": 54
+        },
+        {
+          "rank": 0,
+          "line_idx": 55
+        },
+        {
+          "rank": 0,
+          "line_idx": 56
+        },
+        {
+          "rank": 0,
+          "line_idx": 57
+        },
+        {
+          "rank": 0,
+          "line_idx": 58
+        },
+        {
+          "rank": 0,
+          "line_idx": 59
+        },
+        {
+          "rank": 0,
+          "line_idx": 60
+        },
+        {
+          "rank": 0,
+          "line_idx": 61
+        },
+        {
+          "rank": 0,
+          "line_idx": 62
+        },
+        {
+          "rank": 0,
+          "line_idx": 63
+        },
+        {
+          "rank": 0,
+          "line_idx": 64
+        },
+        {
+          "rank": 0,
+          "line_idx": 65
+        },
+        {
+          "rank": 0,
+          "line_idx": 66
+        },
+        {
+          "rank": 0,
+          "line_idx": 67
+        },
+        {
+          "rank": 0,
+          "line_idx": 68
+        },
+        {
+          "rank": 0,
+          "line_idx": 69
+        },
+        {
+          "rank": 0,
+          "line_idx": 70
+        },
+        {
+          "rank": 0,
+          "line_idx": 71
+        },
+        {
+          "rank": 0,
+          "line_idx": 72
+        },
+        {
+          "rank": 0,
+          "line_idx": 73
+        },
+        {
+          "rank": 0,
+          "line_idx": 74
+        },
+        {
+          "rank": 0,
+          "line_idx": 75
+        },
+        {
+          "rank": 0,
+          "line_idx": 76
+        },
+        {
+          "rank": 0,
+          "line_idx": 77
+        },
+        {
+          "rank": 0,
+          "line_idx": 78
+        },
+        {
+          "rank": 0,
+          "line_idx": 79
+        },
+        {
+          "rank": 0,
+          "line_idx": 80
+        },
+        {
+          "rank": 0,
+          "line_idx": 81
+        },
+        {
+          "rank": 0,
+          "line_idx": 82
+        },
+        {
+          "rank": 0,
+          "line_idx": 83
+        },
+        {
+          "rank": 0,
+          "line_idx": 84
+        },
+        {
+          "rank": 0,
+          "line_idx": 85
+        },
+        {
+          "rank": 0,
+          "line_idx": 86
+        },
+        {
+          "rank": 0,
+          "line_idx": 87
+        },
+        {
+          "rank": 0,
+          "line_idx": 88
+        },
+        {
+          "rank": 0,
+          "line_idx": 89
+        },
+        {
+          "rank": 0,
+          "line_idx": 90
+        },
+        {
+          "rank": 0,
+          "line_idx": 91
+        },
+        {
+          "rank": 1,
+          "line_idx": 0
+        },
+        {
+          "rank": 1,
+          "line_idx": 1
+        },
+        {
+          "rank": 1,
+          "line_idx": 2
+        },
+        {
+          "rank": 1,
+          "line_idx": 3
+        },
+        {
+          "rank": 1,
+          "line_idx": 4
+        },
+        {
+          "rank": 1,
+          "line_idx": 5
+        },
+        {
+          "rank": 1,
+          "line_idx": 6
+        },
+        {
+          "rank": 1,
+          "line_idx": 7
+        },
+        {
+          "rank": 1,
+          "line_idx": 8
+        },
+        {
+          "rank": 1,
+          "line_idx": 9
+        },
+        {
+          "rank": 1,
+          "line_idx": 10
+        },
+        {
+          "rank": 1,
+          "line_idx": 11
+        },
+        {
+          "rank": 1,
+          "line_idx": 12
+        },
+        {
+          "rank": 1,
+          "line_idx": 13
+        },
+        {
+          "rank": 1,
+          "line_idx": 14
+        },
+        {
+          "rank": 1,
+          "line_idx": 15
+        },
+        {
+          "rank": 1,
+          "line_idx": 16
+        },
+        {
+          "rank": 1,
+          "line_idx": 17
+        },
+        {
+          "rank": 1,
+          "line_idx": 18
+        },
+        {
+          "rank": 1,
+          "line_idx": 19
+        },
+        {
+          "rank": 1,
+          "line_idx": 20
+        },
+        {
+          "rank": 1,
+          "line_idx": 21
+        },
+        {
+          "rank": 1,
+          "line_idx": 22
+        },
+        {
+          "rank": 1,
+          "line_idx": 23
+        },
+        {
+          "rank": 1,
+          "line_idx": 24
+        },
+        {
+          "rank": 1,
+          "line_idx": 25
+        },
+        {
+          "rank": 1,
+          "line_idx": 26
+        },
+        {
+          "rank": 1,
+          "line_idx": 27
+        },
+        {
+          "rank": 1,
+          "line_idx": 28
+        },
+        {
+          "rank": 1,
+          "line_idx": 29
+        },
+        {
+          "rank": 1,
+          "line_idx": 30
+        },
+        {
+          "rank": 1,
+          "line_idx": 31
+        },
+        {
+          "rank": 1,
+          "line_idx": 32
+        },
+        {
+          "rank": 1,
+          "line_idx": 33
+        },
+        {
+          "rank": 1,
+          "line_idx": 34
+        },
+        {
+          "rank": 1,
+          "line_idx": 35
+        },
+        {
+          "rank": 1,
+          "line_idx": 36
+        },
+        {
+          "rank": 1,
+          "line_idx": 37
+        },
+        {
+          "rank": 1,
+          "line_idx": 38
+        },
+        {
+          "rank": 1,
+          "line_idx": 39
+        },
+        {
+          "rank": 1,
+          "line_idx": 40
+        },
+        {
+          "rank": 1,
+          "line_idx": 41
+        },
+        {
+          "rank": 1,
+          "line_idx": 42
+        },
+        {
+          "rank": 1,
+          "line_idx": 43
+        },
+        {
+          "rank": 1,
+          "line_idx": 44
+        },
+        {
+          "rank": 1,
+          "line_idx": 45
+        },
+        {
+          "rank": 1,
+          "line_idx": 46
+        },
+        {
+          "rank": 1,
+          "line_idx": 47
+        },
+        {
+          "rank": 1,
+          "line_idx": 48
+        },
+        {
+          "rank": 1,
+          "line_idx": 49
+        },
+        {
+          "rank": 1,
+          "line_idx": 50
+        },
+        {
+          "rank": 1,
+          "line_idx": 51
+        },
+        {
+          "rank": 1,
+          "line_idx": 52
+        },
+        {
+          "rank": 1,
+          "line_idx": 53
+        },
+        {
+          "rank": 1,
+          "line_idx": 54
+        },
+        {
+          "rank": 1,
+          "line_idx": 55
+        },
+        {
+          "rank": 1,
+          "line_idx": 56
+        },
+        {
+          "rank": 1,
+          "line_idx": 57
+        },
+        {
+          "rank": 1,
+          "line_idx": 58
+        },
+        {
+          "rank": 1,
+          "line_idx": 59
+        },
+        {
+          "rank": 1,
+          "line_idx": 60
+        },
+        {
+          "rank": 1,
+          "line_idx": 61
+        },
+        {
+          "rank": 1,
+          "line_idx": 62
+        },
+        {
+          "rank": 1,
+          "line_idx": 63
+        },
+        {
+          "rank": 1,
+          "line_idx": 64
+        },
+        {
+          "rank": 1,
+          "line_idx": 65
+        },
+        {
+          "rank": 1,
+          "line_idx": 66
+        },
+        {
+          "rank": 1,
+          "line_idx": 67
+        },
+        {
+          "rank": 1,
+          "line_idx": 68
+        },
+        {
+          "rank": 1,
+          "line_idx": 69
+        },
+        {
+          "rank": 1,
+          "line_idx": 70
+        }
+      ]
+    },
+    {
+      "second": 1784074867,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 1 sendbuff 0x7dbb46600400 recvbuff 0x7dbb46600400 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600400,7dbb46600400,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 1 sendbuff 0x7f8a2c600400 recvbuff 0x7f8a2c600400 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600400,7f8a2c600400,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 92
+        },
+        {
+          "rank": 0,
+          "line_idx": 93
+        },
+        {
+          "rank": 0,
+          "line_idx": 94
+        },
+        {
+          "rank": 1,
+          "line_idx": 71
+        },
+        {
+          "rank": 1,
+          "line_idx": 72
+        }
+      ]
+    },
+    {
+      "second": 1784074868,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 2 sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 2 sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 95
+        },
+        {
+          "rank": 0,
+          "line_idx": 96
+        },
+        {
+          "rank": 0,
+          "line_idx": 97
+        },
+        {
+          "rank": 1,
+          "line_idx": 73
+        },
+        {
+          "rank": 1,
+          "line_idx": 74
+        }
+      ]
+    },
+    {
+      "second": 1784074869,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 3 sendbuff 0x7dbb46600400 recvbuff 0x7dbb46600400 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600400,7dbb46600400,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 3 sendbuff 0x7f8a2c600400 recvbuff 0x7f8a2c600400 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600400,7f8a2c600400,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 98
+        },
+        {
+          "rank": 0,
+          "line_idx": 99
+        },
+        {
+          "rank": 0,
+          "line_idx": 100
+        },
+        {
+          "rank": 1,
+          "line_idx": 75
+        },
+        {
+          "rank": 1,
+          "line_idx": 76
+        }
+      ]
+    },
+    {
+      "second": 1784074870,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 4 sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 4 sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 101
+        },
+        {
+          "rank": 0,
+          "line_idx": 102
+        },
+        {
+          "rank": 0,
+          "line_idx": 103
+        },
+        {
+          "rank": 1,
+          "line_idx": 77
+        },
+        {
+          "rank": 1,
+          "line_idx": 78
+        }
+      ]
+    },
+    {
+      "second": 1784074871,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 5 sendbuff 0x7dbb46600400 recvbuff 0x7dbb46600400 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600400,7dbb46600400,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 5 sendbuff 0x7f8a2c600400 recvbuff 0x7f8a2c600400 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600400,7f8a2c600400,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 104
+        },
+        {
+          "rank": 0,
+          "line_idx": 105
+        },
+        {
+          "rank": 0,
+          "line_idx": 106
+        },
+        {
+          "rank": 1,
+          "line_idx": 79
+        },
+        {
+          "rank": 1,
+          "line_idx": 80
+        }
+      ]
+    },
+    {
+      "second": 1784074872,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 6 sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 6 sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 107
+        },
+        {
+          "rank": 0,
+          "line_idx": 108
+        },
+        {
+          "rank": 0,
+          "line_idx": 109
+        },
+        {
+          "rank": 1,
+          "line_idx": 81
+        },
+        {
+          "rank": 1,
+          "line_idx": 82
+        }
+      ]
+    },
+    {
+      "second": 1784074873,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 7 sendbuff 0x7dbb46600400 recvbuff 0x7dbb46600400 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600400,7dbb46600400,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 7 sendbuff 0x7f8a2c600400 recvbuff 0x7f8a2c600400 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600400,7f8a2c600400,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 110
+        },
+        {
+          "rank": 0,
+          "line_idx": 111
+        },
+        {
+          "rank": 0,
+          "line_idx": 112
+        },
+        {
+          "rank": 1,
+          "line_idx": 83
+        },
+        {
+          "rank": 1,
+          "line_idx": 84
+        }
+      ]
+    },
+    {
+      "second": 1784074874,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 8 sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 8 sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 113
+        },
+        {
+          "rank": 0,
+          "line_idx": 114
+        },
+        {
+          "rank": 0,
+          "line_idx": 115
+        },
+        {
+          "rank": 1,
+          "line_idx": 85
+        },
+        {
+          "rank": 1,
+          "line_idx": 86
+        }
+      ]
+    },
+    {
+      "second": 1784074875,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount 9 sendbuff 0x7dbb46600400 recvbuff 0x7dbb46600400 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600400,7dbb46600400,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount 9 sendbuff 0x7f8a2c600400 recvbuff 0x7f8a2c600400 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600400,7f8a2c600400,10,7,0,0,0x1614ce60,0x1614cd10)"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 116
+        },
+        {
+          "rank": 0,
+          "line_idx": 117
+        },
+        {
+          "rank": 0,
+          "line_idx": 118
+        },
+        {
+          "rank": 1,
+          "line_idx": 87
+        },
+        {
+          "rank": 1,
+          "line_idx": 88
+        }
+      ]
+    },
+    {
+      "second": 1784074876,
+      "lines": [
+        "2e194b931ff6:18958:18958 [0] NCCL INFO AllReduce: opCount a sendbuff 0x7dbb46600200 recvbuff 0x7dbb46600200 count 10 datatype 7 op 0 root 0 comm 0x411f8090 [nranks=2] stream 0x3f623430",
+        "2e194b931ff6:18958:18958 NCCL CALL ncclAllReduce(7dbb46600200,7dbb46600200,10,7,0,0,0x411f8090,0x3f623430)",
+        "2e194b931ff6:18958:18958 [0] NCCL INFO 40 Bytes -> Algo 1 proto 0 time 8.616000",
+        "2e194b931ff6:18958:19119 [0] NCCL INFO [Service thread] Connection closed by localRank 0",
+        "2e194b931ff6:18958:19120 [0] NCCL INFO [Proxy Service UDS] exit: stop 1 abortFlag 1",
+        "2e194b931ff6:18958:19212 [0] NCCL INFO comm 0x411f8090 rank 0 nranks 2 cudaDev 0 busId 4f000 - Abort COMPLETE",
+        "2e194b931ff6:18959:18959 [1] NCCL INFO AllReduce: opCount a sendbuff 0x7f8a2c600200 recvbuff 0x7f8a2c600200 count 10 datatype 7 op 0 root 0 comm 0x1614ce60 [nranks=2] stream 0x1614cd10",
+        "2e194b931ff6:18959:18959 NCCL CALL ncclAllReduce(7f8a2c600200,7f8a2c600200,10,7,0,0,0x1614ce60,0x1614cd10)",
+        "2e194b931ff6:18959:19117 [1] NCCL INFO [Service thread] Connection closed by localRank 1",
+        "2e194b931ff6:18959:19118 [1] NCCL INFO [Proxy Service UDS] exit: stop 1 abortFlag 1",
+        "2e194b931ff6:18959:19213 [1] NCCL INFO comm 0x1614ce60 rank 1 nranks 2 cudaDev 1 busId 56000 - Abort COMPLETE"
+      ],
+      "index": [
+        {
+          "rank": 0,
+          "line_idx": 119
+        },
+        {
+          "rank": 0,
+          "line_idx": 120
+        },
+        {
+          "rank": 0,
+          "line_idx": 121
+        },
+        {
+          "rank": 0,
+          "line_idx": 122
+        },
+        {
+          "rank": 0,
+          "line_idx": 123
+        },
+        {
+          "rank": 0,
+          "line_idx": 124
+        },
+        {
+          "rank": 1,
+          "line_idx": 89
+        },
+        {
+          "rank": 1,
+          "line_idx": 90
+        },
+        {
+          "rank": 1,
+          "line_idx": 91
+        },
+        {
+          "rank": 1,
+          "line_idx": 92
+        },
+        {
+          "rank": 1,
+          "line_idx": 93
+        }
+      ]
+    }
+  ]
+}

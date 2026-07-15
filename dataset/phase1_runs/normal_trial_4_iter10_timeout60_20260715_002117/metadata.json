@@ -1,0 +1,14 @@
+{
+  "run_id": "normal_trial_4_iter10_timeout60_20260715_002117",
+  "scenario": "normal",
+  "fault_type": "no_fault",
+  "affected_rank": 0,
+  "delay_seconds": null,
+  "oom_injection": false,
+  "world_size": 2,
+  "master_port": "29614",
+  "fault_iteration": null,
+  "total_iteration": 10,
+  "workload_timeout": 60,
+  "status": "completed"
+}

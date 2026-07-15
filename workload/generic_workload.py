@@ -6,7 +6,7 @@ import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-from phase2_common import setup_nccl_env, write_metadata, append_label_csv
+from phase2_common import setup_nccl_env, write_metadata, append_label_csv, resolve_nccl_log_path, LineTimestampTracker
 
 class FaultInjection:
     def __init__(self, rank, fault_rank):
@@ -22,6 +22,11 @@ class FaultInjection:
 
 def run_workload(rank, world_size, num_iterations, workload_timout, fault_injection, run_dir, master_port):
     setup_nccl_env(run_dir, master_port)
+
+    log_path = resolve_nccl_log_path(run_dir)
+    ts_path = log_path.parent / f"nccl_timestamps_{log_path.stem[len('nccl_logs_'):]}.json"
+    tracker = LineTimestampTracker(log_path, ts_path)
+    tracker.start()
 
     dist.init_process_group(
         backend="nccl",
@@ -72,4 +77,6 @@ def run_workload(rank, world_size, num_iterations, workload_timout, fault_inject
         except Exception as e:
             print(f"Rank {rank}: Exception during destroy_process_group: {e}", flush=True)
             raise
+        finally:
+            tracker.stop()
 

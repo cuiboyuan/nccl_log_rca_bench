@@ -1,3 +1,7 @@
+Collect Data:
+- Run script to collect data
+- Put phase1_runs, phase2_runs, and labels in dataset/
+- Run `python evaluation/group_by_second.py --dataset-dir dataset/`
 
 Evaluate:
 - Download the dataset:

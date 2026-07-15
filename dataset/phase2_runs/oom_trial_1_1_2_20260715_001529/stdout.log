@@ -1,0 +1,46 @@
+PyTorch version: 2.4.1+cu124
+CUDA version: 12.4
+NCCL version: (2, 20, 5)
+CUDA available: True
+Number of available GPUs: 2
+Rank 0: started on cuda:0
+Rank 1: started on cuda:1
+Rank 0: before warmup all_reduce = tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], device='cuda:0')
+NCCL version 2.20.5+cuda12.4
+Rank 1: before warmup all_reduce = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:1')
+Rank 0: after warmup all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: after warmup all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 1: ==== Iteration 1/20 ====
+Rank 1: before all_reduce iter 0 = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:1')
+Rank 0: ==== Iteration 1/20 ====
+Rank 0: before all_reduce iter 0 = tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], device='cuda:0')
+Rank 1: after all_reduce iter 0 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 0: after all_reduce iter 0 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: ==== Iteration 2/20 ====
+Rank 1: before all_reduce iter 1 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 0: ==== Iteration 2/20 ====
+Rank 0: before all_reduce iter 1 = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:0')
+Rank 1: after all_reduce iter 1 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:1')
+Rank 0: after all_reduce iter 1 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:0')
+Rank 0: ==== Iteration 3/20 ====
+Rank 0: before all_reduce iter 2 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: ==== Iteration 3/20 ====
+Rank 1: injecting delayed CUDA OOM
+Rank 1: RuntimeError: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 1 has a total capacity of 44.43 GiB of which 7.81 MiB is free. Including non-PyTorch memory, this process has 44.42 GiB memory in use. Of the allocated memory 44.00 GiB is allocated by PyTorch, and 2.00 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Rank 1: End of workload.
+A process raised an OOM exception: 
+
+-- Process 1 terminated with the following error:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/dist-packages/torch/multiprocessing/spawn.py", line 76, in _wrap
+    fn(i, *args)
+  File "/workspace/nccl_log_rca_bench/workload/fault_oom.py", line 32, in run_fault_oom
+    run_workload(
+  File "/workspace/nccl_log_rca_bench/workload/generic_workload.py", line 62, in run_workload
+    fault_injection.inject()
+  File "/workspace/nccl_log_rca_bench/workload/fault_oom.py", line 25, in inject
+    x = torch.empty((256, 1024, 1024), device=self.device)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1024.00 MiB. GPU 1 has a total capacity of 44.43 GiB of which 7.81 MiB is free. Including non-PyTorch memory, this process has 44.42 GiB memory in use. Of the allocated memory 44.00 GiB is allocated by PyTorch, and 2.00 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+Total elapsed time: 10.81 seconds

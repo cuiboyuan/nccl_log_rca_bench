@@ -1,7 +1,9 @@
 import os
 import json
 import socket
+import threading
 import time
+from datetime import datetime
 from pathlib import Path
 
 def setup_nccl_env(run_dir: str, master_port: str):
@@ -50,3 +52,66 @@ def get_hostname():
 
 def now_ts():
     return time.strftime("%Y%m%d_%H%M%S")
+
+def resolve_nccl_log_path(run_dir: str) -> Path:
+    """Return the NCCL log file path NCCL will write for the current process."""
+    hostname = socket.gethostname()
+    pid = os.getpid()
+    return Path(run_dir) / f"nccl_logs_{hostname}_{pid}.txt"
+
+
+class LineTimestampTracker:
+    """Background thread that polls a NCCL log file every second and records
+    the Unix timestamp at which each line first appeared."""
+
+    def __init__(self, log_path: Path, out_path: Path):
+        self.log_path = log_path
+        self.out_path = out_path
+        self._stop_event = threading.Event()
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._timestamps: list = []
+        self._start_iso: str = ""
+
+    def start(self):
+        self._start_iso = datetime.now().isoformat()
+        self._thread.start()
+
+    def stop(self):
+        self._stop_event.set()
+        self._thread.join()
+        self._flush()
+        self._write_output()
+
+    def _poll(self):
+        """Read the log file and append timestamps for any newly seen lines.
+        Writes the output file after every update so data survives SIGTERM."""
+        if not self.log_path.exists():
+            return
+        try:
+            with open(self.log_path, "r", errors="replace") as f:
+                count = sum(1 for _ in f)
+        except OSError:
+            return
+        if count > len(self._timestamps):
+            ts = time.time()
+            for _ in range(count - len(self._timestamps)):
+                self._timestamps.append(ts)
+            self._write_output()
+
+    def _run(self):
+        while not self._stop_event.wait(1.0):
+            self._poll()
+
+    def _flush(self):
+        """Final poll to capture lines written after the last scheduled tick."""
+        self._poll()
+
+    def _write_output(self):
+        """Atomically write the timestamp JSON (temp file + rename)."""
+        tmp = self.out_path.with_suffix(".tmp")
+        with open(tmp, "w") as f:
+            json.dump({
+                "start_iso": self._start_iso,
+                "line_timestamps": self._timestamps,
+            }, f)
+        tmp.replace(self.out_path)

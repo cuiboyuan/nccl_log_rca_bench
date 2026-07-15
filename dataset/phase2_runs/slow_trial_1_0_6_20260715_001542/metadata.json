@@ -1,0 +1,14 @@
+{
+  "run_id": "slow_trial_1_0_6_20260715_001542",
+  "scenario": "fail_slow",
+  "fault_type": "gpu_straggler",
+  "affected_rank": 0,
+  "delay_seconds": 6,
+  "oom_injection": false,
+  "world_size": 2,
+  "master_port": "29631",
+  "fault_iteration": "all",
+  "total_iteration": 20,
+  "workload_timeout": 120,
+  "status": "timeout"
+}
