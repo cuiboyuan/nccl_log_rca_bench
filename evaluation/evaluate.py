@@ -191,11 +191,21 @@ def compute_per_fault_metrics(
 # Shared preprocessing
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_preprocessing(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> None:
+def run_preprocessing(
+    normal_train_ratio: float = 0.8,
+    abnormal_train_ratio: float = 0.8,
+    window_size_secs: int | None = None,
+    stride_secs: int | None = None,
+) -> None:
     print("\n" + "=" * 60)
     print("Shared preprocessing – converting NCCL logs to sequences")
     print("=" * 60)
-    data_process.main(normal_train_ratio=normal_train_ratio, abnormal_train_ratio=abnormal_train_ratio)
+    data_process.main(
+        normal_train_ratio=normal_train_ratio,
+        abnormal_train_ratio=abnormal_train_ratio,
+        window_size_secs=window_size_secs,
+        stride_secs=stride_secs,
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -414,9 +424,10 @@ def evaluate_logbert(options: dict, seq_threshold: float) -> dict:
     def aggregate_to_runs(seq_results: list, manifest_entries: list) -> dict:
         run_preds: dict = {}
         for res, info in zip(seq_results, manifest_entries):
-            rid  = info["run_id"]
-            anom = is_anomalous(res, options, seq_threshold)
-            run_preds[rid] = run_preds.get(rid, False) or anom
+            rid = info["run_id"]
+            if run_preds.get(rid):   # already flagged – skip remaining windows
+                continue
+            run_preds[rid] = is_anomalous(res, options, seq_threshold)
         return {k: int(v) for k, v in run_preds.items()}
 
     normal_preds   = aggregate_to_runs(normal_results,   manifest["test_normal"])
@@ -558,11 +569,15 @@ def evaluate_logdeep_saved_results(
 
     for res, meta in zip(normal_results, normal_manifest):
         rid = meta["run_id"]
-        run_preds[rid] = run_preds.get(rid, False) or seq_is_anomaly(res)
+        if run_preds.get(rid):   # already flagged – skip remaining windows
+            continue
+        run_preds[rid] = seq_is_anomaly(res)
 
     for res, meta in zip(abnormal_results, abnormal_manifest):
         rid = meta["run_id"]
-        run_preds[rid] = run_preds.get(rid, False) or seq_is_anomaly(res)
+        if run_preds.get(rid):   # already flagged – skip remaining windows
+            continue
+        run_preds[rid] = seq_is_anomaly(res)
 
     label_map = dict(zip(labels_df["run_id"], labels_df["true_label"]))
     meta_map  = labels_df.set_index("run_id").to_dict("index")
@@ -749,14 +764,35 @@ Examples:
         metavar="RATIO",
         help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
     )
+    parser.add_argument(
+        "--window-size-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window size in seconds. Omit to use one sequence per run.",
+    )
+    parser.add_argument(
+        "--stride-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window stride in seconds. Required when --window-size-secs is set.",
+    )
     args = parser.parse_args()
+
+    if (args.window_size_secs is None) != (args.stride_secs is None):
+        parser.error("--window-size-secs and --stride-secs must both be specified together.")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Shared preprocessing (always runs once, regardless of model selection).
     if not args.skip_preprocess:
-        run_preprocessing(normal_train_ratio=args.normal_train_ratio,
-                          abnormal_train_ratio=args.abnormal_train_ratio)
+        run_preprocessing(
+            normal_train_ratio=args.normal_train_ratio,
+            abnormal_train_ratio=args.abnormal_train_ratio,
+            window_size_secs=args.window_size_secs,
+            stride_secs=args.stride_secs,
+        )
 
     labels_df = load_labels()
     manifest  = load_manifest()

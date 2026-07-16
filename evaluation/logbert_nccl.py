@@ -62,7 +62,7 @@ options: dict = {
     "max_len":           512,
     # Sequences shorter than min_len events are discarded.  NCCL log files
     # typically produce 100+ events, so 10 is a safe lower bound.
-    "min_len":           10,
+    "min_len":           0,
     "mask_ratio":        0.65,
 
     # Data split ratios

@@ -44,7 +44,7 @@ options["device"] = "cuda" if torch.cuda.is_available() else "cpu"
 # Sample
 options["sample"] = "sliding_window"
 options["window_size"] = 20
-options["min_len"] = 10
+options["min_len"] = 0
 
 options["train_ratio"] = 1
 # Keep a non-zero validation split for tiny datasets.

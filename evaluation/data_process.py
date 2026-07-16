@@ -88,22 +88,26 @@ def preprocess_logs(runs: list, all_logs_path: Path) -> list:
     chronological (window) order, interleaving lines from all ranks.
 
     Returns a manifest list: one dict per run:
-        {start, end, phase, run_id}
-    where start/end are the half-open row range in all_logs_path.
+        {start, end, phase, run_id, seconds}
+    where start/end are the half-open row range in all_logs_path and
+    seconds is a list of Unix timestamps (one per written line).
     """
     manifest = []
     line_num = 0
     with open(all_logs_path, "w", encoding="utf-8") as out_f:
         for phase, run_id, run_dir in runs:
             start = line_num
+            run_seconds: list = []
             timeline_path = run_dir / "timeline.json"
             with open(timeline_path, "r", encoding="utf-8") as f:
                 timeline = json.load(f)
             for window in timeline["windows"]:
+                second = window["second"]
                 for raw_line in window["lines"]:
                     raw = raw_line.strip()
                     if raw:
                         out_f.write(raw + "\n")
+                        run_seconds.append(second)
                         line_num += 1
             manifest.append(
                 {
@@ -111,6 +115,7 @@ def preprocess_logs(runs: list, all_logs_path: Path) -> list:
                     "end": line_num,
                     "phase": phase,
                     "run_id": run_id,
+                    "seconds": run_seconds,
                 }
             )
     return manifest
@@ -188,6 +193,61 @@ def build_sequences(structured_csv: Path, manifest: list, event_map: dict) -> li
     return sequences
 
 
+def build_windowed_sequences(
+    structured_csv: Path,
+    manifest: list,
+    event_map: dict,
+    window_size_secs: int,
+    stride_secs: int,
+) -> list:
+    """
+    Convert the Drain structured CSV into time-windowed event sequences.
+
+    Each run is sliced into overlapping windows of *window_size_secs* seconds
+    advanced by *stride_secs* seconds per step.  The ``seconds`` field in each
+    manifest entry (populated by preprocess_logs) maps every event to the
+    Unix second it was emitted.  Empty windows (no events) are skipped so that
+    the returned list and the written sequence files stay aligned.
+
+    Returns a list of dicts:
+        {phase, run_id, window_start, window_end, events: [int]}
+    Events unseen in the training templates are mapped to 1 (UNK token index).
+    """
+    df = pd.read_csv(structured_csv)
+    df["EventInt"] = df["EventId"].map(event_map).fillna(1).astype(int)
+
+    sequences = []
+    for entry in manifest:
+        rows = df.iloc[entry["start"] : entry["end"]]
+        seconds = entry["seconds"]
+        events = rows["EventInt"].tolist()
+
+        if not events:
+            continue
+
+        first_sec = seconds[0]
+        last_sec  = seconds[-1]
+
+        t = first_sec
+        while t <= last_sec:
+            win_events = [
+                e for e, s in zip(events, seconds) if t <= s < t + window_size_secs
+            ]
+            if win_events:
+                sequences.append(
+                    {
+                        "phase":        entry["phase"],
+                        "run_id":       entry["run_id"],
+                        "window_start": t,
+                        "window_end":   t + window_size_secs,
+                        "events":       win_events,
+                    }
+                )
+            t += stride_secs
+
+    return sequences
+
+
 def load_phase2_fault_types(dataset_dir: Path) -> dict:
     """Return {run_id: fault_type} loaded from labels/phase2_labels.csv."""
     labels_path = dataset_dir / "labels" / "phase2_labels.csv"
@@ -258,6 +318,9 @@ def write_output_files(
         result = []
         for s in seqs:
             entry = {"run_id": s["run_id"]}
+            if "window_start" in s:
+                entry["window_start"] = s["window_start"]
+                entry["window_end"]   = s["window_end"]
             if include_fault_type:
                 entry["fault_type"] = phase2_fault_type_by_run.get(s["run_id"], "unknown")
             result.append(entry)
@@ -307,7 +370,12 @@ def write_output_files(
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def main(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> None:
+def main(
+    normal_train_ratio: float = 0.8,
+    abnormal_train_ratio: float = 0.8,
+    window_size_secs: int | None = None,
+    stride_secs: int | None = None,
+) -> None:
     drain_input_dir = OUTPUT_DIR / "drain_input"
     drain_output_dir = OUTPUT_DIR / "drain_output"
     drain_input_dir.mkdir(parents=True, exist_ok=True)
@@ -346,9 +414,15 @@ def main(normal_train_ratio: float = 0.8, abnormal_train_ratio: float = 0.8) -> 
     print(f"  Unique event templates : {len(event_map)}")
 
     print("\n" + "=" * 60)
-    print("Step 5/6  Building per-file event sequences")
+    print("Step 5/6  Building event sequences")
     print("=" * 60)
-    sequences = build_sequences(structured_csv, manifest, event_map)
+    if window_size_secs is not None:
+        print(f"  Window size : {window_size_secs}s  stride : {stride_secs}s")
+        sequences = build_windowed_sequences(
+            structured_csv, manifest, event_map, window_size_secs, stride_secs
+        )
+    else:
+        sequences = build_sequences(structured_csv, manifest, event_map)
     phase2_fault_type_by_run = load_phase2_fault_types(DATASET_DIR)
     print(f"  Total sequences : {len(sequences)}")
 
@@ -380,9 +454,35 @@ if __name__ == "__main__":
         metavar="RATIO",
         help="Fraction of abnormal (phase2) sequences used for training (default: 0.8).",
     )
+    parser.add_argument(
+        "--window-size-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window size in seconds. Omit to use one sequence per run.",
+    )
+    parser.add_argument(
+        "--stride-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window stride in seconds. Required when --window-size-secs is set.",
+    )
     _args = parser.parse_args()
     for _name, _val in [("--normal-train-ratio", _args.normal_train_ratio),
                         ("--abnormal-train-ratio", _args.abnormal_train_ratio)]:
         if not (0.0 < _val < 1.0):
             parser.error(f"{_name} must be between 0 and 1 (exclusive).")
-    main(normal_train_ratio=_args.normal_train_ratio, abnormal_train_ratio=_args.abnormal_train_ratio)
+    if (_args.window_size_secs is None) != (_args.stride_secs is None):
+        parser.error("--window-size-secs and --stride-secs must both be specified together.")
+    if _args.window_size_secs is not None:
+        if _args.window_size_secs <= 0:
+            parser.error("--window-size-secs must be a positive integer.")
+        if _args.stride_secs <= 0:
+            parser.error("--stride-secs must be a positive integer.")
+    main(
+        normal_train_ratio=_args.normal_train_ratio,
+        abnormal_train_ratio=_args.abnormal_train_ratio,
+        window_size_secs=_args.window_size_secs,
+        stride_secs=_args.stride_secs,
+    )

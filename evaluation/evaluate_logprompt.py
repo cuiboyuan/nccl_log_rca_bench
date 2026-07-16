@@ -165,10 +165,49 @@ def build_run_templates(manifest: dict, int_to_template: dict) -> dict:
     return run_templates
 
 
-def _find_log_file(dataset_dir: Path, run_id: str, log_file: str):
-    """Locate a NCCL log file by searching phase1_runs and phase2_runs."""
+def build_window_templates(manifest: dict, int_to_template: dict, split_keys: list) -> dict:
+    """
+    Return {(run_id, window_start, window_end): [unique templates in window]}
+    using the events in each sequence line (one line = one window/session).
+    For un-windowed manifests (no window_start field) the key is
+    (run_id, 0, 0) to maintain a uniform interface.
+    """
+    window_templates: dict = {}
+    for split_key in split_keys:
+        if split_key not in manifest:
+            continue
+        seq_file = OUTPUT_DIR / split_key
+        if not seq_file.exists():
+            raise FileNotFoundError(
+                f"Missing sequence file: {seq_file}. Run data_process.py first."
+            )
+        with open(seq_file) as f:
+            lines = f.readlines()
+
+        for line, entry in zip(lines, manifest[split_key]):
+            run_id    = entry["run_id"]
+            win_start = entry.get("window_start", 0)
+            win_end   = entry.get("window_end",   0)
+            key = (run_id, win_start, win_end)
+            templates: list = []
+            seen: set = set()
+            for tok in line.split():
+                try:
+                    tmpl = int_to_template.get(int(tok), f"<unknown:{tok}>")
+                except ValueError:
+                    continue
+                if tmpl not in seen:
+                    templates.append(tmpl)
+                    seen.add(tmpl)
+            window_templates[key] = templates
+
+    return window_templates
+
+
+def _find_run_dir(dataset_dir: Path, run_id: str) -> Path | None:
+    """Locate a run directory by searching phase1_runs and phase2_runs."""
     for phase_dir in ("phase1_runs", "phase2_runs"):
-        path = dataset_dir / phase_dir / run_id / log_file
+        path = dataset_dir / phase_dir / run_id
         if path.exists():
             return path
     return None
@@ -176,8 +215,8 @@ def _find_log_file(dataset_dir: Path, run_id: str, log_file: str):
 
 def build_run_raw_lines(manifest: dict, dataset_dir: Path) -> dict:
     """
-    Return {run_id: [line, ...]} — unique raw log lines per run in first-seen
-    order, collected across all log files that belong to that run.
+    Return {run_id: [line, ...]} — unique raw log lines per run in
+    chronological order, read from each run's timeline.json.
     Includes both test and train splits so that training runs can be used as
     InContext examples.
     """
@@ -198,23 +237,91 @@ def build_run_raw_lines(manifest: dict, dataset_dir: Path) -> dict:
         if split_key not in manifest:
             continue
         for entry in manifest[split_key]:
-            run_id   = entry["run_id"]
-            log_file = entry["log_file"]
-            log_path = _find_log_file(dataset_dir, run_id, log_file)
-            if log_path is None:
-                print(f"  Warning: log file not found: {run_id}/{log_file}")
-                continue
-            if run_id not in run_lines:
+            run_id = entry["run_id"]
+            if run_id in run_lines:
+                continue  # already loaded (run may appear in multiple splits)
+            run_dir = _find_run_dir(dataset_dir, run_id)
+            if run_dir is None:
+                print(f"  Warning: run directory not found: {run_id}")
                 run_lines[run_id] = []
                 run_seen[run_id]  = set()
-            with open(log_path, encoding="utf-8", errors="replace") as f:
-                for raw_line in f:
+                continue
+            timeline_path = run_dir / "timeline.json"
+            if not timeline_path.exists():
+                print(f"  Warning: timeline.json missing for run: {run_id}")
+                run_lines[run_id] = []
+                run_seen[run_id]  = set()
+                continue
+            with open(timeline_path, encoding="utf-8") as f:
+                timeline = json.load(f)
+            run_lines[run_id] = []
+            run_seen[run_id]  = set()
+            for window in timeline["windows"]:
+                for raw_line in window["lines"]:
                     line = raw_line.strip()
                     if line and line not in run_seen[run_id]:
                         run_lines[run_id].append(line)
                         run_seen[run_id].add(line)
 
     return run_lines
+
+
+def build_window_raw_lines(manifest: dict, dataset_dir: Path, split_keys: list) -> dict:
+    """
+    Return {(run_id, window_start, window_end): [unique raw lines in window]}
+    by reading each run's timeline.json and keeping only the per-second buckets
+    whose ``second`` timestamp falls inside [window_start, window_end).
+    For un-windowed manifests (window_start=0, window_end=0) all lines are
+    included (equivalent to build_run_raw_lines but keyed by the three-tuple).
+    Timeline files are cached so each run is read from disk only once.
+    """
+    window_raw: dict    = {}
+    timeline_cache: dict = {}  # run_id -> parsed timeline dict (or None)
+
+    for split_key in split_keys:
+        if split_key not in manifest:
+            continue
+        for entry in manifest[split_key]:
+            run_id    = entry["run_id"]
+            win_start = entry.get("window_start", 0)
+            win_end   = entry.get("window_end",   0)
+            key = (run_id, win_start, win_end)
+            if key in window_raw:
+                continue
+
+            if run_id not in timeline_cache:
+                run_dir = _find_run_dir(dataset_dir, run_id)
+                if run_dir is None:
+                    print(f"  Warning: run directory not found: {run_id}")
+                    timeline_cache[run_id] = None
+                else:
+                    tl_path = run_dir / "timeline.json"
+                    if not tl_path.exists():
+                        print(f"  Warning: timeline.json missing for run: {run_id}")
+                        timeline_cache[run_id] = None
+                    else:
+                        with open(tl_path, encoding="utf-8") as f:
+                            timeline_cache[run_id] = json.load(f)
+
+            tl = timeline_cache[run_id]
+            if tl is None:
+                window_raw[key] = []
+                continue
+
+            is_windowed = win_start != 0 or win_end != 0
+            lines: list = []
+            seen: set   = set()
+            for window in tl["windows"]:
+                if is_windowed and not (win_start <= window["second"] < win_end):
+                    continue
+                for raw_line in window["lines"]:
+                    line = raw_line.strip()
+                    if line and line not in seen:
+                        lines.append(line)
+                        seen.add(line)
+            window_raw[key] = lines
+
+    return window_raw
 
 
 # ── Prompt construction ───────────────────────────────────────────────────────
@@ -505,6 +612,20 @@ Examples:
             "output/nccl/logprompt/<strategy>_<log-type>_<model>/"
         ),
     )
+    parser.add_argument(
+        "--window-size-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window size in seconds used during preprocessing. Omit to use one sequence per run.",
+    )
+    parser.add_argument(
+        "--stride-secs",
+        type=int,
+        default=None,
+        metavar="SECS",
+        help="Sliding-window stride in seconds. Required when --window-size-secs is set.",
+    )
     args = parser.parse_args()
 
     if not args.api_key:
@@ -513,6 +634,8 @@ Examples:
         parser.error("--example-file is required for InContext strategy")
     if args.cot_rules and args.cot_rules_file:
         parser.error("--cot-rules and --cot-rules-file are mutually exclusive")
+    if (args.window_size_secs is None) != (args.stride_secs is None):
+        parser.error("--window-size-secs and --stride-secs must both be specified together.")
 
     cot_rules = DEFAULT_COT_RULES
     if args.cot_rules:
@@ -542,8 +665,12 @@ Examples:
             print("\n" + "=" * 60)
             print("Preprocessing – converting NCCL logs to sequences")
             print("=" * 60)
-            data_process.main(normal_train_ratio=args.normal_train_ratio,
-                              abnormal_train_ratio=args.abnormal_train_ratio)
+            data_process.main(
+                normal_train_ratio=args.normal_train_ratio,
+                abnormal_train_ratio=args.abnormal_train_ratio,
+                window_size_secs=args.window_size_secs,
+                stride_secs=args.stride_secs,
+            )
 
     # ── Load data ─────────────────────────────────────────────────────────────
 
@@ -557,25 +684,40 @@ Examples:
     label_map = dict(zip(labels_df["run_id"].astype(str), labels_df["true_label"]))
     meta_map  = labels_df.set_index("run_id").to_dict("index")
 
-    if args.log_type == "parsed":
-        int_to_template = load_int_to_template()
-        run_inputs = build_run_templates(manifest, int_to_template)
-    else:
-        int_to_template = {}
-        run_inputs = build_run_raw_lines(manifest, DATASET_DIR)
-
     log_desc = (
         "unique log event templates" if args.log_type == "parsed" else "raw log lines"
     )
-    normal_run_ids = {e["run_id"] for e in manifest.get("test_normal", [])}
-    test_run_ids = normal_run_ids | {
-        e["run_id"]
-        for k in manifest
-        if k.startswith("test_abnormal")
-        for e in manifest[k]
-    }
+    test_split_keys = ["test_normal"] + _abnormal_split_keys(manifest)
+    normal_run_ids  = {e["run_id"] for e in manifest.get("test_normal", [])}
+    test_run_ids    = {e["run_id"] for k in test_split_keys for e in manifest.get(k, [])}
+
+    if args.log_type == "parsed":
+        int_to_template = load_int_to_template()
+        # Per-window templates for inference (one entry per sequence line)
+        window_inputs = build_window_templates(manifest, int_to_template, test_split_keys)
+        # Per-run aggregated templates for InContext examples
+        run_inputs = build_run_templates(manifest, int_to_template)
+    else:
+        int_to_template = {}
+        # Per-window raw lines for inference; per-run raw lines for InContext examples
+        window_inputs = build_window_raw_lines(manifest, DATASET_DIR, test_split_keys)
+        run_inputs    = build_run_raw_lines(manifest, DATASET_DIR)
+
+    # Ordered list of test windows; windows for the same run are consecutive
+    test_windows: list = []
+    _seen_keys: set = set()
+    for split_key in test_split_keys:
+        for entry in manifest.get(split_key, []):
+            rid  = entry["run_id"]
+            wt_s = entry.get("window_start", 0)
+            wt_e = entry.get("window_end",   0)
+            key  = (rid, wt_s, wt_e)
+            if key not in _seen_keys:
+                test_windows.append((key, entry))
+                _seen_keys.add(key)
 
     print(f"  Runs to evaluate        : {len(test_run_ids)}")
+    print(f"  Test windows            : {len(test_windows)}")
     if args.log_type == "parsed":
         print(f"  Unique template vocab   : {len(int_to_template)}")
 
@@ -602,59 +744,99 @@ Examples:
         if not incontext_examples:
             parser.error("No valid examples found in --example-file")
 
-    # ── Classify each run ─────────────────────────────────────────────────────
+    # ── Classify each test window ─────────────────────────────────────────────
 
     print("\n" + "=" * 60)
     print(f"LogPrompt – {args.strategy} via {args.model}")
     print("=" * 60)
 
-    rows = []
+    rows: list = []
     unparseable_count = 0
+    run_flagged: set = set()   # run_ids where anomaly already detected (early stop)
+    run_preds: dict  = {}       # run_id -> 0/1 final verdict
 
-    for idx, (run_id, log_inputs) in enumerate(
-        sorted((rid, inp) for rid, inp in run_inputs.items() if rid in test_run_ids), 1
-    ):
+    total_windows = len(test_windows)
+    for idx, (win_key, entry) in enumerate(test_windows, 1):
+        run_id    = win_key[0]
+        win_start = win_key[1]
+        win_end   = win_key[2]
+        is_windowed = win_start != 0 or win_end != 0
+
+        log_inputs = window_inputs.get(win_key, run_inputs.get(run_id, []))
+
+        win_label = f"[{win_start}s–{win_end}s] " if is_windowed else ""
         print(
-            f"  [{idx:>3}/{len(test_run_ids)}] {run_id}  "
+            f"  [{idx:>3}/{total_windows}] {run_id} {win_label}"
             f"({len(log_inputs)} {log_desc})",
             end=" … ", flush=True,
         )
 
-        if args.strategy == "CoT":
-            prompt = build_cot_prompt(log_inputs, log_desc, cot_rules)
+        if run_id in run_flagged:
+            # Early stop: run already flagged anomalous, skip LLM call
+            pred     = 1
+            prompt   = ""
+            response = "<skipped: run already flagged anomalous>"
+            print("skipped (already anomalous)")
         else:
-            prompt = build_incontext_prompt(log_inputs, incontext_examples, log_desc)
+            if args.strategy == "CoT":
+                prompt = build_cot_prompt(log_inputs, log_desc, cot_rules)
+            else:
+                prompt = build_incontext_prompt(log_inputs, incontext_examples, log_desc)
 
-        response = call_llm(prompt, args.api_url, args.api_key, args.model,
-                            system_prompt=args.system_prompt)
-        pred     = parse_verdict(response)
+            response = call_llm(prompt, args.api_url, args.api_key, args.model,
+                                system_prompt=args.system_prompt)
+            pred     = parse_verdict(response)
 
-        if pred == -1:
-            print("WARN: unparseable → defaulting to normal")
-            print(f"    Response snippet: {response[:200]!r}")
-            pred = 0
-            unparseable_count += 1
-        else:
-            print("abnormal" if pred == 1 else "normal")
+            if pred == -1:
+                print("WARN: unparseable → defaulting to normal")
+                print(f"    Response snippet: {response[:200]!r}")
+                pred = 0
+                unparseable_count += 1
+            else:
+                print("abnormal" if pred == 1 else "normal")
+
+            if pred == 1:
+                run_flagged.add(run_id)
+
+        run_preds[run_id] = max(run_preds.get(run_id, 0), pred)
 
         rows.append({
+            "run_id":       run_id,
+            "window_start": win_start if is_windowed else None,
+            "window_end":   win_end   if is_windowed else None,
+            "scenario":     meta_map.get(run_id, {}).get("scenario",   "unknown"),
+            "fault_type":   meta_map.get(run_id, {}).get("fault_type", "unknown"),
+            "true_label":   int(label_map.get(run_id, -1)),
+            "pred_label":   pred,
+            "correct":      int(pred == int(label_map.get(run_id, -1))),
+            "log_type":     args.log_type,
+            "strategy":     args.strategy,
+            "model":        args.model,
+            "prompt":       prompt,
+            "response":     response,
+        })
+
+    # ── Build per-run results from window aggregation ─────────────────────────
+
+    run_rows = []
+    for run_id, pred in sorted(run_preds.items()):
+        true = int(label_map.get(run_id, -1))
+        run_rows.append({
             "run_id":     run_id,
             "scenario":   meta_map.get(run_id, {}).get("scenario",   "unknown"),
             "fault_type": meta_map.get(run_id, {}).get("fault_type", "unknown"),
-            "true_label": int(label_map.get(run_id, -1)),
+            "true_label": true,
             "pred_label": pred,
-            "correct":    int(pred == int(label_map.get(run_id, -1))),
+            "correct":    int(pred == true),
             "log_type":   args.log_type,
             "strategy":   args.strategy,
             "model":      args.model,
-            "prompt":     prompt,
-            "response":   response,
         })
 
-    # ── Evaluate ──────────────────────────────────────────────────────────────
-
-    results_df = pd.DataFrame(rows)
+    results_df = pd.DataFrame(run_rows)
     eval_df    = results_df[results_df["true_label"] != -1].copy()
+
+    # ── Evaluate ──────────────────────────────────────────────────────────────
 
     print("\n" + "=" * 60)
     print("LogPrompt – evaluation")
@@ -665,13 +847,13 @@ Examples:
     )
 
     if unparseable_count:
-        print(f"\n  Warning: {unparseable_count} run(s) had unparseable LLM responses (defaulted to normal)")
+        print(f"\n  Warning: {unparseable_count} window(s) had unparseable LLM responses (defaulted to normal)")
 
     metrics = compute_binary_metrics(eval_df)
-    metrics["model"]       = "logprompt"
-    metrics["strategy"]    = args.strategy
-    metrics["llm_model"]   = args.model
-    metrics["log_type"]    = args.log_type
+    metrics["model"]         = "logprompt"
+    metrics["strategy"]      = args.strategy
+    metrics["llm_model"]     = args.model
+    metrics["log_type"]      = args.log_type
     metrics["by_fault_type"] = compute_per_fault_metrics(eval_df, normal_run_ids)
 
     print(f"\n  TP={metrics['TP']}  TN={metrics['TN']}  FP={metrics['FP']}  FN={metrics['FN']}")
@@ -691,15 +873,22 @@ Examples:
 
     # ── Write outputs ─────────────────────────────────────────────────────────
 
-    results_csv    = output_dir / "logprompt_evaluation_results.csv"
-    metrics_json   = output_dir / "logprompt_metrics.json"
+    results_csv     = output_dir / "logprompt_evaluation_results.csv"
+    metrics_json    = output_dir / "logprompt_metrics.json"
     responses_jsonl = output_dir / "logprompt_responses.jsonl"
 
-    results_df.drop(columns=["response", "prompt"]).to_csv(results_csv, index=False)
+    results_df.to_csv(results_csv, index=False)
 
     with open(responses_jsonl, "w") as f:
         for row in rows:
-            f.write(json.dumps({"run_id": row["run_id"], "prompt": row["prompt"], "response": row["response"]}) + "\n")
+            record = {
+                "run_id":       row["run_id"],
+                "window_start": row.get("window_start"),
+                "window_end":   row.get("window_end"),
+                "prompt":       row["prompt"],
+                "response":     row["response"],
+            }
+            f.write(json.dumps(record) + "\n")
 
     with open(metrics_json, "w") as f:
         json.dump(metrics, f, indent=2)
