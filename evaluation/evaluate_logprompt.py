@@ -691,16 +691,22 @@ Examples:
     normal_run_ids  = {e["run_id"] for e in manifest.get("test_normal", [])}
     test_run_ids    = {e["run_id"] for k in test_split_keys for e in manifest.get(k, [])}
 
+    # All split keys (train + test) so example runs in training splits are reachable
+    _train_abn_keys = sorted(
+        k for k in manifest if k.startswith("train_abnormal_") and k != "train_abnormal"
+    ) or ["train_abnormal"]
+    all_split_keys = ["train_normal"] + _train_abn_keys + test_split_keys
+
     if args.log_type == "parsed":
         int_to_template = load_int_to_template()
-        # Per-window templates for inference (one entry per sequence line)
-        window_inputs = build_window_templates(manifest, int_to_template, test_split_keys)
-        # Per-run aggregated templates for InContext examples
+        # Per-window templates for all splits (test inference + InContext example lookup)
+        window_inputs = build_window_templates(manifest, int_to_template, all_split_keys)
+        # Per-run aggregated templates for InContext examples (full-run fallback)
         run_inputs = build_run_templates(manifest, int_to_template)
     else:
         int_to_template = {}
-        # Per-window raw lines for inference; per-run raw lines for InContext examples
-        window_inputs = build_window_raw_lines(manifest, DATASET_DIR, test_split_keys)
+        # Per-window raw lines for all splits; per-run raw lines for full-run fallback
+        window_inputs = build_window_raw_lines(manifest, DATASET_DIR, all_split_keys)
         run_inputs    = build_run_raw_lines(manifest, DATASET_DIR)
 
     # Ordered list of test windows; windows for the same run are consecutive
@@ -726,6 +732,7 @@ Examples:
     incontext_examples = []
     if args.strategy == "InContext":
         ex_df = pd.read_csv(args.example_file)
+        has_window_cols = "window_start" in ex_df.columns and "window_end" in ex_df.columns
         for _, row in ex_df.iterrows():
             rid = str(row["run_id"])
             lbl = str(row["label"]).strip().lower()
@@ -735,10 +742,27 @@ Examples:
             if rid not in run_inputs:
                 print(f"  Warning: example run {rid} not found in processed data, skipping")
                 continue
+
+            # Use a specific window if window_start/window_end are provided and non-null
+            templates = None
+            if has_window_cols:
+                ws = row["window_start"]
+                we = row["window_end"]
+                if pd.notna(ws) and pd.notna(we):
+                    win_key = (rid, int(ws), int(we))
+                    templates = window_inputs.get(win_key)
+                    if templates is None:
+                        print(
+                            f"  Warning: window [{int(ws)}, {int(we)}) not found "
+                            f"for {rid} – falling back to full-run templates"
+                        )
+            if templates is None:
+                templates = run_inputs[rid]
+
             incontext_examples.append({
                 "run_id":    rid,
                 "label":     lbl,
-                "templates": run_inputs[rid],
+                "templates": templates,
             })
         print(f"  InContext examples      : {len(incontext_examples)}")
         if not incontext_examples:
