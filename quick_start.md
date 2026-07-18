@@ -7,7 +7,7 @@ Evaluate:
 - Download the dataset:
     - `curl -LO https://github.com/cuiboyuan/nccl_log_rca_bench/releases/download/v0.1.0/nccl_log_benchmark.zip`
 - Split and parse train/test data:
-    - `python evaluation/data_process.py  --normal-train-ratio 0.5 --abnormal-train-ratio 0.5 --window-size-secs 30 --stride-secs 10`
+    - `python evaluation/data_process.py  --normal-train-ratio 0.5 --abnormal-train-ratio 0.5 --window-size-secs 5 --stride-secs 1`
 - DeepLog, LogAnomaly, LogBert:
     - `python evaluation/evaluate.py --skip-preprocess`
 - LLM-based, CoT strategy, default rules:
