@@ -297,6 +297,45 @@ def build_incontext_prompt(templates: list, examples: list, log_desc: str = "uni
 
 # ── LLM call ──────────────────────────────────────────────────────────────────
 
+def _extract_token_usage(usage: dict) -> dict:
+    """
+    Normalise token-usage fields from an API response into four canonical keys:
+      input_tokens        – non-cached input / prompt tokens
+      cached_input_tokens – tokens served from the prompt cache (cache reads)
+      cache_write_tokens  – tokens written to the prompt cache (cache creation)
+      output_tokens       – generated / completion tokens
+
+    Handles both Anthropic-style and OpenAI-style response shapes.
+
+    Anthropic:
+      input_tokens, cache_creation_input_tokens,
+      cache_read_input_tokens, output_tokens
+
+    OpenAI:
+      prompt_tokens (+ optional prompt_tokens_details.cached_tokens),
+      completion_tokens
+    """
+    if not usage:
+        return {"input_tokens": 0, "cached_input_tokens": 0,
+                "cache_write_tokens": 0, "output_tokens": 0}
+    # Anthropic style
+    if "input_tokens" in usage or "output_tokens" in usage:
+        return {
+            "input_tokens":        usage.get("input_tokens", 0),
+            "cached_input_tokens": usage.get("cache_read_input_tokens", 0),
+            "cache_write_tokens":  usage.get("cache_creation_input_tokens", 0),
+            "output_tokens":       usage.get("output_tokens", 0),
+        }
+    # OpenAI style
+    cached = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0)
+    return {
+        "input_tokens":        usage.get("prompt_tokens", 0),
+        "cached_input_tokens": cached,
+        "cache_write_tokens":  0,  # OpenAI does not expose cache writes
+        "output_tokens":       usage.get("completion_tokens", 0),
+    }
+
+
 def call_llm(
     prompt: str,
     api_url: str,
@@ -304,8 +343,19 @@ def call_llm(
     model: str,
     system_prompt: str = "",
     max_retries: int = 8,
-) -> str:
-    """POST to an OpenAI-compatible chat completions endpoint."""
+) -> tuple:
+    """
+    POST to an OpenAI-compatible chat completions endpoint.
+
+    Returns
+    -------
+    (content, usage, elapsed_sec)
+      content     : str   – the assistant reply text
+      usage       : dict  – raw usage object from the API response
+                            (empty dict when the API omits the field;
+                             pass to _extract_token_usage() for normalised fields)
+      elapsed_sec : float – wall-clock seconds from first attempt to success
+    """
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
@@ -319,11 +369,16 @@ def call_llm(
         "messages": messages,
         "temperature": 0.0,
     }
+    t0 = time.time()
     for attempt in range(max_retries):
         try:
             resp = requests.post(api_url, headers=headers, json=payload, timeout=90)
             resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"]
+            elapsed = time.time() - t0
+            data    = resp.json()
+            content = data["choices"][0]["message"]["content"]
+            usage   = data.get("usage") or {}
+            return content, usage, elapsed
         except requests.HTTPError as exc:
             if attempt == max_retries - 1:
                 raise
@@ -625,9 +680,11 @@ Examples:
         else:
             prompt = build_incontext_prompt(log_inputs, incontext_examples, log_desc)
 
-        response = call_llm(prompt, args.api_url, args.api_key, args.model,
-                            system_prompt=args.system_prompt)
-        pred     = parse_verdict(response)
+        response, usage, elapsed = call_llm(
+            prompt, args.api_url, args.api_key, args.model,
+            system_prompt=args.system_prompt,
+        )
+        pred = parse_verdict(response)
 
         if pred == -1:
             print("WARN: unparseable → defaulting to normal")
@@ -637,18 +694,25 @@ Examples:
         else:
             print("abnormal" if pred == 1 else "normal")
 
+        token_usage = _extract_token_usage(usage)
         rows.append({
-            "run_id":     run_id,
-            "scenario":   meta_map.get(run_id, {}).get("scenario",   "unknown"),
-            "fault_type": meta_map.get(run_id, {}).get("fault_type", "unknown"),
-            "true_label": int(label_map.get(run_id, -1)),
-            "pred_label": pred,
-            "correct":    int(pred == int(label_map.get(run_id, -1))),
-            "log_type":   args.log_type,
-            "strategy":   args.strategy,
-            "model":      args.model,
-            "prompt":     prompt,
-            "response":   response,
+            "run_id":            run_id,
+            "scenario":          meta_map.get(run_id, {}).get("scenario",   "unknown"),
+            "fault_type":        meta_map.get(run_id, {}).get("fault_type", "unknown"),
+            "true_label":        int(label_map.get(run_id, -1)),
+            "pred_label":        pred,
+            "correct":           int(pred == int(label_map.get(run_id, -1))),
+            "log_type":          args.log_type,
+            "strategy":          args.strategy,
+            "model":             args.model,
+            "num_input_lines":   len(log_inputs),
+            "input_tokens":      token_usage["input_tokens"],
+            "cached_input_tokens": token_usage["cached_input_tokens"],
+            "cache_write_tokens": token_usage["cache_write_tokens"],
+            "output_tokens":     token_usage["output_tokens"],
+            "elapsed_sec":       round(elapsed, 3),
+            "prompt":            prompt,
+            "response":          response,
         })
 
     # ── Evaluate ──────────────────────────────────────────────────────────────
