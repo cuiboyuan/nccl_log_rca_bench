@@ -1,0 +1,195 @@
+PyTorch version: 2.4.1+cu124
+CUDA version: 12.4
+NCCL version: (2, 20, 5)
+CUDA available: True
+Number of available GPUs: 2
+Rank 0: started on cuda:0
+Rank 1: started on cuda:1
+Rank 1: before warmup all_reduce = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:1')
+Rank 0: before warmup all_reduce = tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], device='cuda:0')
+NCCL version 2.20.5+cuda12.4
+Rank 0: after warmup all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: after warmup all_reduce = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 0: ==== Iteration 1/30 ====
+Rank 0: before all_reduce iter 0 = tensor([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], device='cuda:0')
+Rank 1: ==== Iteration 1/30 ====
+Rank 1: before all_reduce iter 0 = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:1')
+Rank 1: after all_reduce iter 0 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 0: after all_reduce iter 0 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: ==== Iteration 2/30 ====
+Rank 1: before all_reduce iter 1 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:1')
+Rank 0: ==== Iteration 2/30 ====
+Rank 0: before all_reduce iter 1 = tensor([2., 2., 2., 2., 2., 2., 2., 2., 2., 2.], device='cuda:0')
+Rank 1: after all_reduce iter 1 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:1')
+Rank 0: after all_reduce iter 1 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:0')
+Rank 1: ==== Iteration 3/30 ====
+Rank 1: before all_reduce iter 2 = tensor([4., 4., 4., 4., 4., 4., 4., 4., 4., 4.], device='cuda:1')
+Rank 0: ==== Iteration 3/30 ====
+Rank 0: before all_reduce iter 2 = tensor([3., 3., 3., 3., 3., 3., 3., 3., 3., 3.], device='cuda:0')
+Rank 1: after all_reduce iter 2 = tensor([7., 7., 7., 7., 7., 7., 7., 7., 7., 7.], device='cuda:1')
+Rank 0: after all_reduce iter 2 = tensor([7., 7., 7., 7., 7., 7., 7., 7., 7., 7.], device='cuda:0')
+Rank 1: ==== Iteration 4/30 ====
+Rank 1: before all_reduce iter 3 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:1')
+Rank 0: ==== Iteration 4/30 ====
+Rank 0: before all_reduce iter 3 = tensor([4., 4., 4., 4., 4., 4., 4., 4., 4., 4.], device='cuda:0')
+Rank 1: after all_reduce iter 3 = tensor([9., 9., 9., 9., 9., 9., 9., 9., 9., 9.], device='cuda:1')
+Rank 0: after all_reduce iter 3 = tensor([9., 9., 9., 9., 9., 9., 9., 9., 9., 9.], device='cuda:0')
+Rank 0: ==== Iteration 5/30 ====
+Rank 0: before all_reduce iter 4 = tensor([5., 5., 5., 5., 5., 5., 5., 5., 5., 5.], device='cuda:0')
+Rank 1: ==== Iteration 5/30 ====
+Rank 1: before all_reduce iter 4 = tensor([6., 6., 6., 6., 6., 6., 6., 6., 6., 6.], device='cuda:1')
+Rank 1: after all_reduce iter 4 = tensor([11., 11., 11., 11., 11., 11., 11., 11., 11., 11.], device='cuda:1')
+Rank 0: after all_reduce iter 4 = tensor([11., 11., 11., 11., 11., 11., 11., 11., 11., 11.], device='cuda:0')
+Rank 1: ==== Iteration 6/30 ====
+Rank 1: before all_reduce iter 5 = tensor([7., 7., 7., 7., 7., 7., 7., 7., 7., 7.], device='cuda:1')
+Rank 0: ==== Iteration 6/30 ====
+Rank 0: before all_reduce iter 5 = tensor([6., 6., 6., 6., 6., 6., 6., 6., 6., 6.], device='cuda:0')
+Rank 1: after all_reduce iter 5 = tensor([13., 13., 13., 13., 13., 13., 13., 13., 13., 13.], device='cuda:1')
+Rank 0: after all_reduce iter 5 = tensor([13., 13., 13., 13., 13., 13., 13., 13., 13., 13.], device='cuda:0')
+Rank 1: ==== Iteration 7/30 ====
+Rank 1: before all_reduce iter 6 = tensor([8., 8., 8., 8., 8., 8., 8., 8., 8., 8.], device='cuda:1')
+Rank 0: ==== Iteration 7/30 ====
+Rank 0: before all_reduce iter 6 = tensor([7., 7., 7., 7., 7., 7., 7., 7., 7., 7.], device='cuda:0')
+Rank 1: after all_reduce iter 6 = tensor([15., 15., 15., 15., 15., 15., 15., 15., 15., 15.], device='cuda:1')
+Rank 0: after all_reduce iter 6 = tensor([15., 15., 15., 15., 15., 15., 15., 15., 15., 15.], device='cuda:0')
+Rank 1: ==== Iteration 8/30 ====
+Rank 1: before all_reduce iter 7 = tensor([9., 9., 9., 9., 9., 9., 9., 9., 9., 9.], device='cuda:1')
+Rank 0: ==== Iteration 8/30 ====
+Rank 0: before all_reduce iter 7 = tensor([8., 8., 8., 8., 8., 8., 8., 8., 8., 8.], device='cuda:0')
+Rank 1: after all_reduce iter 7 = tensor([17., 17., 17., 17., 17., 17., 17., 17., 17., 17.], device='cuda:1')
+Rank 0: after all_reduce iter 7 = tensor([17., 17., 17., 17., 17., 17., 17., 17., 17., 17.], device='cuda:0')
+Rank 1: ==== Iteration 9/30 ====
+Rank 1: before all_reduce iter 8 = tensor([10., 10., 10., 10., 10., 10., 10., 10., 10., 10.], device='cuda:1')
+Rank 0: ==== Iteration 9/30 ====
+Rank 0: before all_reduce iter 8 = tensor([9., 9., 9., 9., 9., 9., 9., 9., 9., 9.], device='cuda:0')
+Rank 1: after all_reduce iter 8 = tensor([19., 19., 19., 19., 19., 19., 19., 19., 19., 19.], device='cuda:1')
+Rank 0: after all_reduce iter 8 = tensor([19., 19., 19., 19., 19., 19., 19., 19., 19., 19.], device='cuda:0')
+Rank 1: ==== Iteration 10/30 ====
+Rank 1: before all_reduce iter 9 = tensor([11., 11., 11., 11., 11., 11., 11., 11., 11., 11.], device='cuda:1')
+Rank 0: ==== Iteration 10/30 ====
+Rank 0: before all_reduce iter 9 = tensor([10., 10., 10., 10., 10., 10., 10., 10., 10., 10.], device='cuda:0')
+Rank 1: after all_reduce iter 9 = tensor([21., 21., 21., 21., 21., 21., 21., 21., 21., 21.], device='cuda:1')
+Rank 0: after all_reduce iter 9 = tensor([21., 21., 21., 21., 21., 21., 21., 21., 21., 21.], device='cuda:0')
+Rank 1: ==== Iteration 11/30 ====
+Rank 1: before all_reduce iter 10 = tensor([12., 12., 12., 12., 12., 12., 12., 12., 12., 12.], device='cuda:1')
+Rank 0: ==== Iteration 11/30 ====
+Rank 0: before all_reduce iter 10 = tensor([11., 11., 11., 11., 11., 11., 11., 11., 11., 11.], device='cuda:0')
+Rank 1: after all_reduce iter 10 = tensor([23., 23., 23., 23., 23., 23., 23., 23., 23., 23.], device='cuda:1')
+Rank 0: after all_reduce iter 10 = tensor([23., 23., 23., 23., 23., 23., 23., 23., 23., 23.], device='cuda:0')
+Rank 1: ==== Iteration 12/30 ====
+Rank 1: before all_reduce iter 11 = tensor([13., 13., 13., 13., 13., 13., 13., 13., 13., 13.], device='cuda:1')
+Rank 0: ==== Iteration 12/30 ====
+Rank 0: before all_reduce iter 11 = tensor([12., 12., 12., 12., 12., 12., 12., 12., 12., 12.], device='cuda:0')
+Rank 1: after all_reduce iter 11 = tensor([25., 25., 25., 25., 25., 25., 25., 25., 25., 25.], device='cuda:1')
+Rank 0: after all_reduce iter 11 = tensor([25., 25., 25., 25., 25., 25., 25., 25., 25., 25.], device='cuda:0')
+Rank 1: ==== Iteration 13/30 ====
+Rank 1: before all_reduce iter 12 = tensor([14., 14., 14., 14., 14., 14., 14., 14., 14., 14.], device='cuda:1')
+Rank 0: ==== Iteration 13/30 ====
+Rank 0: before all_reduce iter 12 = tensor([13., 13., 13., 13., 13., 13., 13., 13., 13., 13.], device='cuda:0')
+Rank 1: after all_reduce iter 12 = tensor([27., 27., 27., 27., 27., 27., 27., 27., 27., 27.], device='cuda:1')
+Rank 0: after all_reduce iter 12 = tensor([27., 27., 27., 27., 27., 27., 27., 27., 27., 27.], device='cuda:0')
+Rank 1: ==== Iteration 14/30 ====
+Rank 1: before all_reduce iter 13 = tensor([15., 15., 15., 15., 15., 15., 15., 15., 15., 15.], device='cuda:1')
+Rank 0: ==== Iteration 14/30 ====
+Rank 0: before all_reduce iter 13 = tensor([14., 14., 14., 14., 14., 14., 14., 14., 14., 14.], device='cuda:0')
+Rank 1: after all_reduce iter 13 = tensor([29., 29., 29., 29., 29., 29., 29., 29., 29., 29.], device='cuda:1')
+Rank 0: after all_reduce iter 13 = tensor([29., 29., 29., 29., 29., 29., 29., 29., 29., 29.], device='cuda:0')
+Rank 1: ==== Iteration 15/30 ====
+Rank 1: before all_reduce iter 14 = tensor([16., 16., 16., 16., 16., 16., 16., 16., 16., 16.], device='cuda:1')
+Rank 0: ==== Iteration 15/30 ====
+Rank 0: before all_reduce iter 14 = tensor([15., 15., 15., 15., 15., 15., 15., 15., 15., 15.], device='cuda:0')
+Rank 1: after all_reduce iter 14 = tensor([31., 31., 31., 31., 31., 31., 31., 31., 31., 31.], device='cuda:1')
+Rank 0: after all_reduce iter 14 = tensor([31., 31., 31., 31., 31., 31., 31., 31., 31., 31.], device='cuda:0')
+Rank 1: ==== Iteration 16/30 ====
+Rank 1: before all_reduce iter 15 = tensor([17., 17., 17., 17., 17., 17., 17., 17., 17., 17.], device='cuda:1')
+Rank 0: ==== Iteration 16/30 ====
+Rank 0: before all_reduce iter 15 = tensor([16., 16., 16., 16., 16., 16., 16., 16., 16., 16.], device='cuda:0')
+Rank 1: after all_reduce iter 15 = tensor([33., 33., 33., 33., 33., 33., 33., 33., 33., 33.], device='cuda:1')
+Rank 0: after all_reduce iter 15 = tensor([33., 33., 33., 33., 33., 33., 33., 33., 33., 33.], device='cuda:0')
+Rank 1: ==== Iteration 17/30 ====
+Rank 1: before all_reduce iter 16 = tensor([18., 18., 18., 18., 18., 18., 18., 18., 18., 18.], device='cuda:1')
+Rank 0: ==== Iteration 17/30 ====
+Rank 0: before all_reduce iter 16 = tensor([17., 17., 17., 17., 17., 17., 17., 17., 17., 17.], device='cuda:0')
+Rank 1: after all_reduce iter 16 = tensor([35., 35., 35., 35., 35., 35., 35., 35., 35., 35.], device='cuda:1')
+Rank 0: after all_reduce iter 16 = tensor([35., 35., 35., 35., 35., 35., 35., 35., 35., 35.], device='cuda:0')
+Rank 1: ==== Iteration 18/30 ====
+Rank 1: before all_reduce iter 17 = tensor([19., 19., 19., 19., 19., 19., 19., 19., 19., 19.], device='cuda:1')
+Rank 0: ==== Iteration 18/30 ====
+Rank 0: before all_reduce iter 17 = tensor([18., 18., 18., 18., 18., 18., 18., 18., 18., 18.], device='cuda:0')
+Rank 1: after all_reduce iter 17 = tensor([37., 37., 37., 37., 37., 37., 37., 37., 37., 37.], device='cuda:1')
+Rank 0: after all_reduce iter 17 = tensor([37., 37., 37., 37., 37., 37., 37., 37., 37., 37.], device='cuda:0')
+Rank 1: ==== Iteration 19/30 ====
+Rank 1: before all_reduce iter 18 = tensor([20., 20., 20., 20., 20., 20., 20., 20., 20., 20.], device='cuda:1')
+Rank 0: ==== Iteration 19/30 ====
+Rank 0: before all_reduce iter 18 = tensor([19., 19., 19., 19., 19., 19., 19., 19., 19., 19.], device='cuda:0')
+Rank 0: after all_reduce iter 18 = tensor([39., 39., 39., 39., 39., 39., 39., 39., 39., 39.], device='cuda:0')
+Rank 1: after all_reduce iter 18 = tensor([39., 39., 39., 39., 39., 39., 39., 39., 39., 39.], device='cuda:1')
+Rank 0: ==== Iteration 20/30 ====
+Rank 0: before all_reduce iter 19 = tensor([20., 20., 20., 20., 20., 20., 20., 20., 20., 20.], device='cuda:0')
+Rank 1: ==== Iteration 20/30 ====
+Rank 1: before all_reduce iter 19 = tensor([21., 21., 21., 21., 21., 21., 21., 21., 21., 21.], device='cuda:1')
+Rank 0: after all_reduce iter 19 = tensor([41., 41., 41., 41., 41., 41., 41., 41., 41., 41.], device='cuda:0')
+Rank 1: after all_reduce iter 19 = tensor([41., 41., 41., 41., 41., 41., 41., 41., 41., 41.], device='cuda:1')
+Rank 0: ==== Iteration 21/30 ====
+Rank 0: before all_reduce iter 20 = tensor([21., 21., 21., 21., 21., 21., 21., 21., 21., 21.], device='cuda:0')
+Rank 1: ==== Iteration 21/30 ====
+Rank 1: before all_reduce iter 20 = tensor([22., 22., 22., 22., 22., 22., 22., 22., 22., 22.], device='cuda:1')
+Rank 0: after all_reduce iter 20 = tensor([43., 43., 43., 43., 43., 43., 43., 43., 43., 43.], device='cuda:0')
+Rank 1: after all_reduce iter 20 = tensor([43., 43., 43., 43., 43., 43., 43., 43., 43., 43.], device='cuda:1')
+Rank 0: ==== Iteration 22/30 ====
+Rank 0: before all_reduce iter 21 = tensor([22., 22., 22., 22., 22., 22., 22., 22., 22., 22.], device='cuda:0')
+Rank 1: ==== Iteration 22/30 ====
+Rank 1: before all_reduce iter 21 = tensor([23., 23., 23., 23., 23., 23., 23., 23., 23., 23.], device='cuda:1')
+Rank 0: after all_reduce iter 21 = tensor([45., 45., 45., 45., 45., 45., 45., 45., 45., 45.], device='cuda:0')
+Rank 1: after all_reduce iter 21 = tensor([45., 45., 45., 45., 45., 45., 45., 45., 45., 45.], device='cuda:1')
+Rank 0: ==== Iteration 23/30 ====
+Rank 0: before all_reduce iter 22 = tensor([23., 23., 23., 23., 23., 23., 23., 23., 23., 23.], device='cuda:0')
+Rank 1: ==== Iteration 23/30 ====
+Rank 1: before all_reduce iter 22 = tensor([24., 24., 24., 24., 24., 24., 24., 24., 24., 24.], device='cuda:1')
+Rank 0: after all_reduce iter 22 = tensor([47., 47., 47., 47., 47., 47., 47., 47., 47., 47.], device='cuda:0')
+Rank 1: after all_reduce iter 22 = tensor([47., 47., 47., 47., 47., 47., 47., 47., 47., 47.], device='cuda:1')
+Rank 0: ==== Iteration 24/30 ====
+Rank 0: before all_reduce iter 23 = tensor([24., 24., 24., 24., 24., 24., 24., 24., 24., 24.], device='cuda:0')
+Rank 1: ==== Iteration 24/30 ====
+Rank 1: before all_reduce iter 23 = tensor([25., 25., 25., 25., 25., 25., 25., 25., 25., 25.], device='cuda:1')
+Rank 0: after all_reduce iter 23 = tensor([49., 49., 49., 49., 49., 49., 49., 49., 49., 49.], device='cuda:0')
+Rank 1: after all_reduce iter 23 = tensor([49., 49., 49., 49., 49., 49., 49., 49., 49., 49.], device='cuda:1')
+Rank 0: ==== Iteration 25/30 ====
+Rank 0: before all_reduce iter 24 = tensor([25., 25., 25., 25., 25., 25., 25., 25., 25., 25.], device='cuda:0')
+Rank 1: ==== Iteration 25/30 ====
+Rank 1: before all_reduce iter 24 = tensor([26., 26., 26., 26., 26., 26., 26., 26., 26., 26.], device='cuda:1')
+Rank 0: after all_reduce iter 24 = tensor([51., 51., 51., 51., 51., 51., 51., 51., 51., 51.], device='cuda:0')
+Rank 1: after all_reduce iter 24 = tensor([51., 51., 51., 51., 51., 51., 51., 51., 51., 51.], device='cuda:1')
+Rank 0: ==== Iteration 26/30 ====
+Rank 0: before all_reduce iter 25 = tensor([26., 26., 26., 26., 26., 26., 26., 26., 26., 26.], device='cuda:0')
+Rank 1: ==== Iteration 26/30 ====
+Rank 1: before all_reduce iter 25 = tensor([27., 27., 27., 27., 27., 27., 27., 27., 27., 27.], device='cuda:1')
+Rank 0: after all_reduce iter 25 = tensor([53., 53., 53., 53., 53., 53., 53., 53., 53., 53.], device='cuda:0')
+Rank 1: after all_reduce iter 25 = tensor([53., 53., 53., 53., 53., 53., 53., 53., 53., 53.], device='cuda:1')
+Rank 0: ==== Iteration 27/30 ====
+Rank 0: before all_reduce iter 26 = tensor([27., 27., 27., 27., 27., 27., 27., 27., 27., 27.], device='cuda:0')
+Rank 1: ==== Iteration 27/30 ====
+Rank 1: before all_reduce iter 26 = tensor([28., 28., 28., 28., 28., 28., 28., 28., 28., 28.], device='cuda:1')
+Rank 0: after all_reduce iter 26 = tensor([55., 55., 55., 55., 55., 55., 55., 55., 55., 55.], device='cuda:0')
+Rank 1: after all_reduce iter 26 = tensor([55., 55., 55., 55., 55., 55., 55., 55., 55., 55.], device='cuda:1')
+Rank 0: ==== Iteration 28/30 ====
+Rank 0: before all_reduce iter 27 = tensor([28., 28., 28., 28., 28., 28., 28., 28., 28., 28.], device='cuda:0')
+Rank 1: ==== Iteration 28/30 ====
+Rank 1: before all_reduce iter 27 = tensor([29., 29., 29., 29., 29., 29., 29., 29., 29., 29.], device='cuda:1')
+Rank 0: after all_reduce iter 27 = tensor([57., 57., 57., 57., 57., 57., 57., 57., 57., 57.], device='cuda:0')
+Rank 1: after all_reduce iter 27 = tensor([57., 57., 57., 57., 57., 57., 57., 57., 57., 57.], device='cuda:1')
+Rank 0: ==== Iteration 29/30 ====
+Rank 0: before all_reduce iter 28 = tensor([29., 29., 29., 29., 29., 29., 29., 29., 29., 29.], device='cuda:0')
+Rank 1: ==== Iteration 29/30 ====
+Rank 1: before all_reduce iter 28 = tensor([30., 30., 30., 30., 30., 30., 30., 30., 30., 30.], device='cuda:1')
+Rank 1: after all_reduce iter 28 = tensor([59., 59., 59., 59., 59., 59., 59., 59., 59., 59.], device='cuda:1')
+Rank 0: after all_reduce iter 28 = tensor([59., 59., 59., 59., 59., 59., 59., 59., 59., 59.], device='cuda:0')
+Rank 1: ==== Iteration 30/30 ====
+Rank 1: before all_reduce iter 29 = tensor([31., 31., 31., 31., 31., 31., 31., 31., 31., 31.], device='cuda:1')
+Rank 0: ==== Iteration 30/30 ====
+Rank 0: before all_reduce iter 29 = tensor([30., 30., 30., 30., 30., 30., 30., 30., 30., 30.], device='cuda:0')
+Rank 1: after all_reduce iter 29 = tensor([61., 61., 61., 61., 61., 61., 61., 61., 61., 61.], device='cuda:1')
+Rank 0: after all_reduce iter 29 = tensor([61., 61., 61., 61., 61., 61., 61., 61., 61., 61.], device='cuda:0')
+Rank 1: End of workload.
+Rank 0: End of workload.
+Total elapsed time: 34.20 seconds
