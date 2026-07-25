@@ -1,6 +1,6 @@
 # GF-Bench: GPU Failure Simulation Framework and Dataset
 
-GF-Benchtorojectto is a research artifact for generating controlled failures in multi-GPU workloads, collecting rank-local NVIDIA Collective Communications Library (NCCL) logs, and evaluating log-based anomaly detection methods.
+GF-Bench is a research artifact for generating controlled failures in multi-GPU workloads, collecting rank-local NVIDIA Collective Communications Library (NCCL) logs, and evaluating log-based anomaly detection methods.
 
 The current artifact focuses on two failure families that are observable through NCCL traces:
 
