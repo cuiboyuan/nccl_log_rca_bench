@@ -1,29 +1,13 @@
 # GF-Bench: GPU Failure Simulation Framework and Dataset
 
-GF-Bench is a research artifact for generating controlled failures in multi-GPU workloads, collecting rank-local NVIDIA Collective Communications Library (NCCL) logs, and evaluating log-based anomaly detection methods.
+GF-Bench is a framework for generating controlled failures in multi-GPU workloads, collecting rank-local NVIDIA Collective Communications Library (NCCL) logs, and evaluating log-based anomaly detection methods.
 
-The current artifact focuses on two failure families that are observable through NCCL traces:
+The current framework focuses on two failure families that are observable through NCCL traces:
 
 - **CUDA out-of-memory (OOM)** as a fail-stop failure;
 - **persistent GPU straggler** as a fail-slow failure.
 
 The accompanying empirical study evaluates three sequence-based methods—DeepLog, LogAnomaly, and LogBERT—and the LLM-based LogPrompt. It also compares Drain-parsed logs with raw, rank-preserving logs to study the trade-off between detection effectiveness and operational cost.
-
-## Research Artifact at a Glance
-
-| Component | Current implementation |
-|---|---|
-| Execution framework | PyTorch distributed execution with the NCCL backend |
-| Process model | One worker process per visible GPU |
-| Normal workload | Iterative local tensor operations followed by AllReduce |
-| Fail-stop injection | Repeated GPU allocation until CUDA OOM |
-| Fail-slow injection | Configurable delay on one rank before each collective operation |
-| Collected artifacts | Per-process NCCL traces, stdout/stderr, metadata, and CSV labels |
-| Log representation | Raw NCCL logs and Drain-extracted event templates |
-| Evaluated methods | DeepLog, LogAnomaly, LogBERT, LogPrompt |
-| Main metrics | Precision, recall, F1, accuracy, token usage, latency, and API cost |
-
-The initial dataset described in the paper contains **220 two-GPU executions**: 100 normal runs, 60 CUDA OOM runs, and 60 straggler runs.
 
 ## Repository Structure
 
@@ -275,41 +259,6 @@ python evaluation/calculate_cost.py \
 
 The script contains built-in GPT-5.4 prices used by the study and accepts explicit `--price-input`, `--price-cached-input`, and `--price-output` overrides. Because API prices may change, record the price configuration and evaluation date when reporting new results.
 
-## Extending GF-Bench
-
-### Add a new failure mechanism
-
-1. Subclass `FaultInjection` from `workload/generic_workload.py`.
-2. Implement:
-   - `should_inject(iteration)` to define the target rank and trigger condition;
-   - `inject()` to implement the failure behavior.
-3. Add a scenario branch in `workload/run_experiment.py`.
-4. Add a shell wrapper under `scripts/` with explicit configuration arguments.
-5. Extend the label schema only when the new failure requires additional ground-truth fields.
-
-### Add a new workload
-
-Reuse the process setup in `generic_workload.py` and replace the local computation and collective-operation sequence. Preserve the following artifact contract where possible:
-
-- one run directory per execution;
-- rank-local NCCL logs;
-- `metadata.json` for run configuration and outcome;
-- one append-only label row per run;
-- stable `run_id` values connecting labels, logs, and evaluation outputs.
-
-### Add a new detector
-
-A detector should consume either the raw run-level logs or the representation produced by `evaluation/data_process.py`, then emit at least:
-
-```text
-run_id
-true_label
-pred_label
-fault_type
-```
-
-Use the same normal test set for each fault-specific evaluation so that false-positive counts remain comparable.
-
 ## Third-Party Code
 
 The `evaluation/logbert/` directory contains adapted or vendored code used to evaluate LogBERT, DeepLog, and LogAnomaly. Its upstream license is retained in:
@@ -319,7 +268,3 @@ evaluation/logbert/LICENSE
 ```
 
 When redistributing or modifying that component, preserve its license and attribution requirements.
-
-## License
-
-A repository-wide license is not currently included. Until a root `LICENSE` file is added, the presence of source code in this repository should not be interpreted as granting general rights to use, modify, or redistribute the project beyond applicable law and the separately licensed third-party components.
