@@ -1,8 +1,14 @@
 # GF-Bench: GPU Failure Simulation Framework and Dataset
 
+[Read the paper](https://dl.acm.org/doi/10.1145/3820756.3844919)
+
+This repo contains the code and dataset of the paper “When Log Parsing Removes What Matters: Detecting Failures in Distributed GPU Workload” (RASE 2026).
+
+***
+
 GF-Bench is a framework for generating controlled failures in multi-GPU workloads, collecting rank-local NVIDIA Collective Communications Library (NCCL) logs, and evaluating log-based anomaly detection methods.
 
-The current framework focuses on two failure families that are observable through NCCL traces:
+The current framework focuses on two failure families that are observable through NCCL logs:
 
 - **CUDA out-of-memory (OOM)** as a fail-stop failure;
 - **persistent GPU straggler** as a fail-slow failure.
