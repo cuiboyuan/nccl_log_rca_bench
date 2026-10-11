@@ -2,7 +2,7 @@
 
 [Read the paper](https://dl.acm.org/doi/10.1145/3820756.3844919)
 
-This repo contains the code and dataset of the paper “When Log Parsing Removes What Matters: Detecting Failures in Distributed GPU Workload” (RASE 2026).
+This repo contains the code and dataset of the paper “When Log Parsing Removes What Matters: Detecting Failures in Distributed GPU Workloads” (RASE 2026).
 
 ***
 
@@ -274,3 +274,24 @@ evaluation/logbert/LICENSE
 ```
 
 When redistributing or modifying that component, preserve its license and attribution requirements.
+
+## Citation
+```
+@inproceedings{10.1145/3820756.3844919,
+  author = {Cui, Boyuan and Zeng, Yuyang and Tian, Yifang and Jacobsen, Hans-Arno},
+  title = {When Log Parsing Removes What Matters: Detecting Failures in Distributed GPU Workloads},
+  year = {2026},
+  isbn = {9798400727870},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3820756.3844919},
+  doi = {10.1145/3820756.3844919},
+  booktitle = {Proceedings of the 1st International Workshop on Reliable and Trustworthy Automated Software Engineering},
+  pages = {60–63},
+  numpages = {4},
+  keywords = {NCCL, benchmark, distributed GPU system, failure analysis, fault injection, log anomaly detection},
+  location = {Munich, Germany},
+  series = {RASE '26}
+}
+```
+
