@@ -1,6 +1,6 @@
 # GF-Bench: GPU Failure Simulation Framework and Dataset
 
-[Read the paper](https://dl.acm.org/doi/10.1145/3820756.3844919)
+**Paper:** [ACM](https://dl.acm.org/doi/10.1145/3820756.3844919) | [arXiv](https://arxiv.org/abs/2610.14009)
 
 This repo contains the code and dataset of the paper “When Log Parsing Removes What Matters: Detecting Failures in Distributed GPU Workloads” (RASE 2026).
 
